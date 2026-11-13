@@ -1,15 +1,14 @@
 /* ---------------------------------------------------------------------------
-   preloader.js: when the department ring (assets/css/preloader.css) hands over.
+   preloader.js: when the department film (assets/css/preloader.css) hands over.
 
-   It lets go once the page and its fonts have loaded and the show has had its
-   moment: about three seconds, until every department is connected and the
-   logo has pulsed. A click or a key skips the moment; a ceiling means a slow
-   connection can never strand the page behind it.
+   It lets go once the page and its fonts have loaded and the film has run to
+   the end: every department shown, the Mega logo's ring complete and its tick
+   in place (about eight seconds). A click or a key skips straight to the
+   sign-in; a ceiling means a slow connection can never strand the page.
 
-   The meter is fed from here, so the number means something: it climbs while
-   the page loads, slowing as it goes so it never arrives on its own, and only
-   completes when the preloader is about to hand over. When the sign-in is
-   uncovered it announces 'preloader:done' on the document.
+   The steps under the film are animated in CSS; this file keeps their
+   progress readable for screen readers, and announces 'preloader:done' on the
+   document once the sign-in is uncovered.
 --------------------------------------------------------------------------- */
 
 (() => {
@@ -19,44 +18,29 @@
   if (!el) return;
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MOMENT = still ? 300 : 3500;     // the show, if it can't be read from the animation
-  const CEILING = 8000;                  // never longer than this, whatever is slow
-  const fill = document.getElementById('plFill');
-  const pct = document.getElementById('plPct');
-  const meter = document.getElementById('plMeter');
+  const MOMENT = still ? 300 : 8100;     // the film, if it can't be read from the animation
+  const CEILING = 14000;                 // never longer than this, whatever is slow
+  const steps = document.getElementById('plSteps');
   const started = performance.now();
 
-  let shown = 0;
-  let climbing = 0;
-  let waiting = 0;
   let loaded = false;
   let skip = false;
   let gone = false;
+  let waiting = 0;
 
-  function paint(value) {
-    shown = value;
-    fill.style.width = `${value.toFixed(1)}%`;
-    pct.textContent = `${Math.round(value)}%`;
-    meter.setAttribute('aria-valuenow', String(Math.round(value)));
-  }
+  const progress = setInterval(() => {
+    const done = Math.min(99, Math.round(((performance.now() - started) / MOMENT) * 100));
+    steps.setAttribute('aria-valuenow', String(done));
+  }, 250);
 
-  /* An asymptote, not a countdown: each tick closes part of the gap to a
-     ceiling that rises once the page has loaded, so the bar always moves
-     and never claims to be done before it is. */
-  function climb() {
-    const goal = loaded ? 97 : 86;
-    paint(shown + (goal - shown) * 0.07);
-    climbing = setTimeout(climb, 80);
-  }
-
-  /* Time left in the show, read from the logo's final pulse, so it holds
-     however late painting began; the clock where that can't be read. */
+  /* Time left in the film, read from the finale's tick, so it holds however
+     late painting began; the clock where that can't be read. */
   function showLeft() {
     try {
-      const pulse = el.querySelector('.pl-logo').getAnimations()[0];
-      if (pulse && pulse.effect) {
-        const end = pulse.effect.getComputedTiming().endTime;
-        return Math.max(0, end - (pulse.currentTime || 0)) + 200;   // and a beat to see it land
+      const tick = el.querySelector('.fin-check').getAnimations()[0];
+      if (tick && tick.effect) {
+        const end = tick.effect.getComputedTiming().endTime;
+        return Math.max(0, end - (tick.currentTime || 0)) + 250;   // and a beat to see it land
       }
     } catch (error) { /* fall back to the clock */ }
     return Math.max(0, MOMENT - (performance.now() - started));
@@ -71,28 +55,18 @@
   function leave() {
     if (gone) return;
     gone = true;
-    clearTimeout(climbing);
     clearTimeout(waiting);
-    paint(100);
+    clearInterval(progress);
+    steps.setAttribute('aria-valuenow', '100');
 
-    // a beat at 100%, then the iris opens from the centre of the logo
+    // the film fades away and the sign-in rises in its place
+    el.classList.add('is-revealing');
+    document.body.classList.add('is-ready');
+
     setTimeout(() => {
-      const logo = el.querySelector('.pl-logo').getBoundingClientRect();
-      const cx = logo.left + logo.width / 2;
-      const cy = logo.top + logo.height / 2;
-      // just wide enough to pass the farthest corner, so the whole opening is seen
-      const far = Math.hypot(Math.max(cx, window.innerWidth - cx), Math.max(cy, window.innerHeight - cy)) + 60;
-      el.style.setProperty('--cx', `${cx}px`);
-      el.style.setProperty('--cy', `${cy}px`);
-      el.style.setProperty('--iris-to', `${Math.ceil(far)}px`);
-      el.classList.add('is-revealing');
-      document.body.classList.add('is-ready');
-
-      setTimeout(() => {
-        el.remove();
-        document.dispatchEvent(new CustomEvent('preloader:done'));
-      }, still ? 0 : 1150);
-    }, still ? 0 : 160);
+      el.remove();
+      document.dispatchEvent(new CustomEvent('preloader:done'));
+    }, still ? 0 : 650);
   }
 
   function pageLoaded() {
@@ -122,7 +96,4 @@
       maybeLeave();
     }
   });
-
-  paint(3);
-  climb();
 })();

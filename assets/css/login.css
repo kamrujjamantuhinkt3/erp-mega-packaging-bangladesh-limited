@@ -849,7 +849,7 @@ input {
 .js .is-ready .reveal {
   opacity: 1;
   animation: reveal-up .9s var(--ease-out) backwards;
-  animation-delay: calc(.7s + var(--i, 0) * .08s);
+  animation-delay: calc(.35s + var(--i, 0) * .08s);
 }
 
 @keyframes reveal-up {
