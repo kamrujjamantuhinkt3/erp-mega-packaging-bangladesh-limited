@@ -1,0 +1,2 @@
+# Backend internals only: never serve these files to the browser
+Require all denied

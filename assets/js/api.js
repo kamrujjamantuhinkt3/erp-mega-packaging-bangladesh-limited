@@ -1,0 +1,35 @@
+/* Mega Packaging ERP: the one place the frontend talks to the PHP backend in /api */
+const Api = (() => {
+  'use strict';
+
+  // Issued by api/session.php; sent back with every POST so the backend knows the request came from this app
+  let csrfToken = '';
+
+  /**
+   * Calls an API endpoint and resolves to { ok, status, data }.
+   * Only rejects when the server can't be reached at all.
+   */
+  async function request(endpoint, { method = 'GET', data } = {}) {
+    const headers = { Accept: 'application/json' };
+    if (method !== 'GET') headers['X-CSRF-Token'] = csrfToken;
+    if (data !== undefined) headers['Content-Type'] = 'application/json';
+
+    const response = await fetch(`api/${endpoint}`, {
+      method,
+      headers,
+      body: data === undefined ? undefined : JSON.stringify(data),
+      credentials: 'same-origin',
+      cache: 'no-store',
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (typeof payload.csrf === 'string') csrfToken = payload.csrf;
+
+    return { ok: response.ok && payload.ok === true, status: response.status, data: payload };
+  }
+
+  return {
+    session: () => request('session.php'),
+    login: (username, password) => request('login.php', { method: 'POST', data: { username, password } }),
+    logout: () => request('logout.php', { method: 'POST' }),
+  };
+})();

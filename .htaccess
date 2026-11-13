@@ -1,0 +1,13 @@
+# Mega Packaging ERP: web server settings (Apache / XAMPP)
+
+<IfModule mod_headers.c>
+    # Pages, styles and scripts: always check for a newer copy, so changes show up straight away
+    <FilesMatch "\.(html|css|js)$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
+
+    # Basic protection on every response
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "same-origin"
+</IfModule>
