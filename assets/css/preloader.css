@@ -64,47 +64,6 @@
    Frame: brand, stage, caption, steps
    --------------------------------------------------------------------- */
 
-/* the company's motto, above its name, through the whole film and the finale */
-.pl-motto {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0 0 14px;
-  font: 700 11px/1 var(--head);
-  letter-spacing: .3em;
-  text-transform: uppercase;
-  color: var(--brand);
-  animation: pl-motto-in .6s ease-out .05s both;
-}
-
-.pl-motto::before,
-.pl-motto::after {
-  content: '';
-  width: 32px;
-  height: 1px;
-  background: linear-gradient(90deg, rgba(3, 66, 184, 0), rgba(3, 66, 184, .45));
-}
-
-.pl-motto::after {
-  transform: scaleX(-1);
-}
-
-/* letter-spacing leaves a gap after each word's last letter; take it back */
-.pl-motto span {
-  margin-right: -.3em;
-}
-
-.pl-motto i {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #9db4e3;
-}
-
-@keyframes pl-motto-in {
-  from { opacity: 0; transform: translateY(-6px); }
-}
-
 /* the company, shown through the film and handed to the finale */
 .pl-brand {
   display: flex;
@@ -144,7 +103,7 @@
 }
 
 .pl-stage {
-  width: min(540px, 90vw, calc((100vh - 322px) * 1.54));
+  width: min(540px, 90vw, calc((100vh - 290px) * 1.54));
   aspect-ratio: 400 / 260;
   margin-top: clamp(8px, 2.5vh, 24px);
 }
@@ -1424,21 +1383,6 @@
 }
 
 @media (max-width: 560px) {
-  .pl-motto {
-    gap: 8px;
-    font-size: 9.5px;
-    letter-spacing: .16em;
-  }
-
-  .pl-motto span {
-    margin-right: -.16em;
-  }
-
-  .pl-motto::before,
-  .pl-motto::after {
-    display: none;
-  }
-
   .pl-step span {
     display: none;
   }
