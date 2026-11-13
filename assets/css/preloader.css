@@ -64,6 +64,47 @@
    Frame: brand, stage, caption, steps
    --------------------------------------------------------------------- */
 
+/* the company's motto, above its name, through the whole film and the finale */
+.pl-motto {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 14px;
+  font: 700 11px/1 var(--head);
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--brand);
+  animation: pl-motto-in .6s ease-out .05s both;
+}
+
+.pl-motto::before,
+.pl-motto::after {
+  content: '';
+  width: 32px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(3, 66, 184, 0), rgba(3, 66, 184, .45));
+}
+
+.pl-motto::after {
+  transform: scaleX(-1);
+}
+
+/* letter-spacing leaves a gap after each word's last letter; take it back */
+.pl-motto span {
+  margin-right: -.3em;
+}
+
+.pl-motto i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #9db4e3;
+}
+
+@keyframes pl-motto-in {
+  from { opacity: 0; transform: translateY(-6px); }
+}
+
 /* the company, shown through the film and handed to the finale */
 .pl-brand {
   display: flex;
@@ -103,7 +144,7 @@
 }
 
 .pl-stage {
-  width: min(540px, 90vw, calc((100vh - 290px) * 1.54));
+  width: min(540px, 90vw, calc((100vh - 322px) * 1.54));
   aspect-ratio: 400 / 260;
   margin-top: clamp(8px, 2.5vh, 24px);
 }
@@ -335,8 +376,10 @@
   from { opacity: 0; transform: translateX(18px); }
 }
 
+/* Strokes drawn with dasharray "1 2" from an offset just past 1: no dash ever
+   meets either end of the path while hidden, so rounded caps can't leave a dot */
 @keyframes sc-draw {
-  from { stroke-dashoffset: 1; }
+  from { stroke-dashoffset: 1.02; }
 }
 
 @keyframes sc-on {
@@ -922,23 +965,34 @@
   from { clip-path: inset(0 100% 0 0); }
 }
 
-/* signed live: the ink follows the pen */
+/* signed live: the name, then the underline, each inked as the pen passes */
 .lc-sign {
   fill: none;
   stroke: #1b2a6b;
   stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 1;
+  stroke-dasharray: 1 2;
   stroke-dashoffset: 0;
-  animation: sc-draw .5s linear both;
-  animation-delay: calc(var(--s) + .55s);
 }
 
+.lc-sign--name {
+  animation: sc-draw .34s linear both;
+  animation-delay: calc(var(--s) + .5s);
+}
+
+.lc-sign--line {
+  animation: sc-draw .14s linear both;
+  animation-delay: calc(var(--s) + .91s);
+}
+
+/* One animation carries the pen from arrival to lift-off, and holds its
+   first and last frames (both invisible) outside that time, so the pen is
+   never seen anywhere but on its way across the signature */
 .lc-pen {
   opacity: 0;
-  animation: lc-pen .5s linear, lc-pen-show .62s linear;
-  animation-delay: calc(var(--s) + .55s), calc(var(--s) + .5s);
+  animation: lc-pen .75s linear both;
+  animation-delay: calc(var(--s) + .45s);
 }
 
 .lc-pen-nib {
@@ -949,35 +1003,46 @@
   fill: var(--navy);
 }
 
-/* points measured along the signature, so the nib stays on the ink */
+/* nib positions measured along the strokes, so the nib stays on the ink:
+   it arrives, signs the name, glides (lifted) to the underline, draws it, lifts away */
 @keyframes lc-pen {
-  0%   { transform: translate(217px, 206px); }
-  5%   { transform: translate(220px, 198.3px); }
-  10%  { transform: translate(224.5px, 191.4px); }
-  15%  { transform: translate(227.1px, 196.4px); }
-  20%  { transform: translate(224.2px, 204.1px); }
-  25%  { transform: translate(225.1px, 202.3px); }
-  30%  { transform: translate(229.9px, 195.7px); }
-  35%  { transform: translate(231.7px, 201.4px); }
-  40%  { transform: translate(233.7px, 199.2px); }
-  45%  { transform: translate(237.6px, 203px); }
-  50%  { transform: translate(242.8px, 199.2px); }
-  55%  { transform: translate(248.1px, 202.3px); }
-  60%  { transform: translate(253.4px, 199.3px); }
-  65%  { transform: translate(259.1px, 199.4px); }
-  70%  { transform: translate(226.8px, 210.3px); }
-  75%  { transform: translate(235.1px, 210.3px); }
-  80%  { transform: translate(243.3px, 209.8px); }
-  85%  { transform: translate(251.6px, 209.1px); }
-  90%  { transform: translate(259.8px, 208px); }
-  95%  { transform: translate(267.9px, 206.6px); }
-  100% { transform: translate(276px, 205px); }
-}
-
-@keyframes lc-pen-show {
-  0%       { opacity: 0; }
-  8%, 88%  { opacity: 1; }
-  100%     { opacity: 0; }
+  0%      { opacity: 0; transform: translate(226px, 195px); }
+  6.67%   { opacity: 1; transform: translate(217px, 206px); }
+  8.56%   { transform: translate(218.6px, 201.7px); }
+  10.44%  { transform: translate(220.4px, 197.5px); }
+  12.33%  { transform: translate(222.6px, 193.5px); }
+  14.22%  { transform: translate(226px, 190.6px); }
+  16.11%  { transform: translate(227.3px, 194.5px); }
+  18%     { transform: translate(226.4px, 199px); }
+  19.89%  { transform: translate(224.6px, 203.2px); }
+  21.78%  { transform: translate(223.1px, 206.6px); }
+  23.67%  { transform: translate(225px, 202.4px); }
+  25.56%  { transform: translate(227.4px, 198.5px); }
+  27.44%  { transform: translate(230.5px, 195.2px); }
+  29.33%  { transform: translate(232.1px, 198.5px); }
+  31.22%  { transform: translate(231.3px, 203px); }
+  33.11%  { transform: translate(232.5px, 200.8px); }
+  35%     { transform: translate(235.9px, 198px); }
+  36.89%  { transform: translate(237.5px, 201.8px); }
+  38.78%  { transform: translate(239.8px, 203px); }
+  40.67%  { transform: translate(242.6px, 199.4px); }
+  42.56%  { transform: translate(245.3px, 201.5px); }
+  44.44%  { transform: translate(248.5px, 201.9px); }
+  46.33%  { transform: translate(251.4px, 198.4px); }
+  48.22%  { transform: translate(253.8px, 200.8px); }
+  50.11%  { transform: translate(257.4px, 200.9px); }
+  52%     { transform: translate(261px, 198px); }
+  56.67%  { transform: translate(241.0px, 192.0px); }
+  61.33%  { transform: translate(221px, 210px); }
+  63.67%  { transform: translate(227.9px, 210.3px); }
+  66%     { transform: translate(234.8px, 210.3px); }
+  68.33%  { transform: translate(241.8px, 209.9px); }
+  70.67%  { transform: translate(248.7px, 209.4px); }
+  73%     { transform: translate(255.5px, 208.6px); }
+  75.33%  { transform: translate(262.4px, 207.6px); }
+  77.67%  { transform: translate(269.2px, 206.4px); }
+  80%     { opacity: 1; transform: translate(276px, 205px); }
+  100%    { opacity: 0; transform: translate(290px, 191px); }
 }
 
 /* the bank's rubber stamp comes down last */
@@ -1311,7 +1376,7 @@
   stroke: var(--brand);
   stroke-width: 3;
   stroke-linecap: round;
-  stroke-dasharray: 1;
+  stroke-dasharray: 1 2;
   stroke-dashoffset: 0;
   animation: sc-draw .6s cubic-bezier(.6, 0, .3, 1) 6.92s both;
 }
@@ -1359,6 +1424,21 @@
 }
 
 @media (max-width: 560px) {
+  .pl-motto {
+    gap: 8px;
+    font-size: 9.5px;
+    letter-spacing: .16em;
+  }
+
+  .pl-motto span {
+    margin-right: -.16em;
+  }
+
+  .pl-motto::before,
+  .pl-motto::after {
+    display: none;
+  }
+
   .pl-step span {
     display: none;
   }
