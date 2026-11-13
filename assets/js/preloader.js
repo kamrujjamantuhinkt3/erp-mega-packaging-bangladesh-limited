@@ -19,7 +19,7 @@
   if (!el) return;
 
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const MOMENT = still ? 300 : 3200;     // the show, if it can't be read from the animation
+  const MOMENT = still ? 300 : 3500;     // the show, if it can't be read from the animation
   const CEILING = 8000;                  // never longer than this, whatever is slow
   const fill = document.getElementById('plFill');
   const pct = document.getElementById('plPct');
