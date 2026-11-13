@@ -14,42 +14,125 @@
   <!-- Loaded without blocking, so the page still opens if the internet is down -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="stylesheet" href="assets/css/preloader.css">
   <script>
     document.documentElement.classList.add('js');
-    // Safety net: never leave the page covered if login.js fails to load
-    setTimeout(function () { document.body.classList.add('is-ready'); }, 8000);
+    // Safety net: never leave the page covered if preloader.js fails to load
+    setTimeout(function () { document.body.classList.add('is-ready'); }, 10000);
   </script>
+  <script src="assets/js/preloader.js" defer></script>
   <script src="assets/js/api.js" defer></script>
   <script src="assets/js/login.js" defer></script>
 </head>
 <body>
 
-  <!-- Preloader: a carton folds shut and gets taped, then the screen is cut open -->
-  <div class="preloader" id="preloader" aria-hidden="true">
-    <div class="preloader__half preloader__half--top"></div>
-    <div class="preloader__half preloader__half--bottom"></div>
-    <div class="preloader__seam"></div>
-    <div class="preloader__content">
-      <div class="carton-stage carton-stage--packing">
-        <div class="carton-stage__shadow"></div>
-        <div class="carton-stage__lift">
-          <div class="carton">
-            <div class="carton__face carton__face--back"></div>
-            <div class="carton__face carton__face--left"><i class="carton__tab"></i></div>
-            <div class="carton__face carton__face--right"><i class="carton__tab"></i></div>
-            <div class="carton__face carton__face--bottom"></div>
-            <div class="carton__face carton__face--front"><i class="carton__print"></i></div>
-            <div class="carton__flap carton__flap--left"></div>
-            <div class="carton__flap carton__flap--right"></div>
-            <div class="carton__flap carton__flap--back"></div>
-            <div class="carton__flap carton__flap--front"></div>
-            <div class="carton__tape"></div>
-          </div>
+  <!-- Preloader: every department connects to Mega, then the sign-in opens.
+       The show is assets/css/preloader.css; assets/js/preloader.js decides when it ends. -->
+  <div class="preloader" id="preloader">
+    <div class="pl-grid" aria-hidden="true"></div>
+    <div class="pl-halo" aria-hidden="true"></div>
+    <div class="pl-iris" aria-hidden="true"></div>
+
+    <div class="pl-inner">
+      <div class="pl-stage" aria-hidden="true">
+        <svg class="pl-orbit" viewBox="-135 -135 270 270">
+          <defs>
+            <linearGradient id="plArc" x1="-100" y1="-100" x2="100" y2="100" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#5ecde8"/>
+              <stop offset="1" stop-color="#7b78f0"/>
+            </linearGradient>
+            <linearGradient id="plTail" x1="95.1" y1="-30.9" x2="100" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#5ecde8" stop-opacity="0"/>
+              <stop offset="1" stop-color="#e9fbff"/>
+            </linearGradient>
+            <linearGradient id="plSpoke" x1="81" y1="0" x2="53" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#5ecde8" stop-opacity=".2"/>
+              <stop offset="1" stop-color="#5ecde8"/>
+            </linearGradient>
+            <filter id="plGlow" filterUnits="userSpaceOnUse" x="-135" y="-135" width="270" height="270">
+              <feGaussianBlur stdDeviation="2.2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <circle class="pl-dial" r="73" pathLength="360"/>
+          <circle class="pl-track" r="100"/>
+          <circle class="pl-arc" r="100" pathLength="600" transform="rotate(-60)" filter="url(#plGlow)"/>
+          <circle class="pl-flash" r="100" filter="url(#plGlow)"/>
+
+          <!-- one spoke per department, pointing at its chip -->
+          <g transform="rotate(-60)" style="--i:0"><line class="pl-spoke" x1="81" y1="0" x2="53" y2="0" pathLength="1"/><g class="pl-spark"><circle cx="81" cy="0" r="5.5"/><circle cx="81" cy="0" r="2.2"/></g></g>
+          <g transform="rotate(0)" style="--i:1"><line class="pl-spoke" x1="81" y1="0" x2="53" y2="0" pathLength="1"/><g class="pl-spark"><circle cx="81" cy="0" r="5.5"/><circle cx="81" cy="0" r="2.2"/></g></g>
+          <g transform="rotate(60)" style="--i:2"><line class="pl-spoke" x1="81" y1="0" x2="53" y2="0" pathLength="1"/><g class="pl-spark"><circle cx="81" cy="0" r="5.5"/><circle cx="81" cy="0" r="2.2"/></g></g>
+          <g transform="rotate(120)" style="--i:3"><line class="pl-spoke" x1="81" y1="0" x2="53" y2="0" pathLength="1"/><g class="pl-spark"><circle cx="81" cy="0" r="5.5"/><circle cx="81" cy="0" r="2.2"/></g></g>
+          <g transform="rotate(180)" style="--i:4"><line class="pl-spoke" x1="81" y1="0" x2="53" y2="0" pathLength="1"/><g class="pl-spark"><circle cx="81" cy="0" r="5.5"/><circle cx="81" cy="0" r="2.2"/></g></g>
+          <g transform="rotate(240)" style="--i:5"><line class="pl-spoke" x1="81" y1="0" x2="53" y2="0" pathLength="1"/><g class="pl-spark"><circle cx="81" cy="0" r="5.5"/><circle cx="81" cy="0" r="2.2"/></g></g>
+
+          <!-- the light that runs round the ring -->
+          <g class="pl-comet" filter="url(#plGlow)">
+            <path class="pl-comet-tail" d="M95.1 -30.9A100 100 0 0 1 100 0"/>
+            <circle class="pl-comet-halo" cx="100" cy="0" r="7"/>
+            <circle class="pl-comet-head" cx="100" cy="0" r="3.2"/>
+          </g>
+        </svg>
+
+        <div class="pl-core">
+          <span class="pl-core-halo"></span>
+          <span class="pl-core-ring"></span>
+          <span class="pl-core-wave"></span>
+          <img class="pl-logo" src="assets/images/mega-logo-badge.webp" width="440" height="440" alt="" fetchpriority="high">
+          <span class="pl-core-sheen"></span>
+        </div>
+
+        <!-- the departments, in the order a job moves through the business -->
+        <div class="pl-node pl-node--up" style="--i:0; --x:.5; --y:-.866">
+          <span class="pl-chip">
+            <svg viewBox="0 0 24 24"><path d="M3 10.2v3.6a1 1 0 0 0 1 1h2.2l7.3 4.2V5L6.2 9.2H4a1 1 0 0 0-1 1Z"/><path d="M6.2 14.8 7.6 20h2.2l-1.2-4.5"/><path class="ic-wave" d="M16.6 9.4a3.6 3.6 0 0 1 0 5.2"/><path class="ic-wave" d="M19.2 6.8a7.3 7.3 0 0 1 0 10.4"/></svg>
+          </span>
+          <span class="pl-label"><b>Marketing</b><small>Orders &amp; buyers</small></span>
+        </div>
+
+        <div class="pl-node pl-node--right" style="--i:1; --x:1; --y:0">
+          <span class="pl-chip">
+            <svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"/><path d="M14 3l5 5v4"/><path d="M14 3v5h5"/><path d="M8.5 10.5h4M8.5 14h6M8.5 17.5h2.5"/><g class="ic-seal"><circle cx="17.4" cy="17.6" r="3.9"/><path d="m15.8 17.7 1.1 1.1 2.1-2.2"/></g></svg>
+          </span>
+          <span class="pl-label"><b>Commercial</b><small>LC &amp; documents</small></span>
+        </div>
+
+        <div class="pl-node pl-node--down" style="--i:2; --x:.5; --y:.866">
+          <span class="pl-chip">
+            <svg viewBox="0 0 24 24"><g class="ic-box"><rect x="2.5" y="13" width="9" height="8" rx="1"/><path d="M7 13v3"/></g><g class="ic-box"><rect x="12.5" y="13" width="9" height="8" rx="1"/><path d="M17 13v3"/></g><g class="ic-box"><rect x="7.5" y="4" width="9" height="8" rx="1"/><path d="M12 4v3"/></g></svg>
+          </span>
+          <span class="pl-label"><b>Store</b><small>Materials &amp; stock</small></span>
+        </div>
+
+        <div class="pl-node pl-node--down" style="--i:3; --x:-.5; --y:.866">
+          <span class="pl-chip">
+            <svg viewBox="0 0 24 24"><g class="ic-gear"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></g></svg>
+          </span>
+          <span class="pl-label"><b>Production</b><small>Corrugation &amp; print</small></span>
+        </div>
+
+        <div class="pl-node pl-node--left" style="--i:4; --x:-1; --y:0">
+          <span class="pl-chip">
+            <svg viewBox="0 0 24 24"><path class="ic-speed" d="M-2.5 9.5h3M-3.5 13h3"/><g class="ic-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/></g></svg>
+          </span>
+          <span class="pl-label"><b>Delivery</b><small>Challan &amp; dispatch</small></span>
+        </div>
+
+        <div class="pl-node pl-node--up" style="--i:5; --x:-.5; --y:-.866">
+          <span class="pl-chip">
+            <svg class="ic-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="12" r="6.6" stroke-dasharray="1.4 1.9" opacity=".5"/><text x="12" y="16.2" text-anchor="middle">&#x9F3;</text></svg>
+          </span>
+          <span class="pl-label"><b>Accounts</b><small>Bills &amp; payments</small></span>
         </div>
       </div>
-      <p class="preloader__name">Mega Packaging</p>
-      <p class="preloader__sub">Bangladesh Limited</p>
-      <div class="preloader__bar"><span></span></div>
+
+      <div class="pl-meter" id="plMeter" role="progressbar" aria-label="Connecting departments" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <p class="pl-word"><span>Connecting departments</span><b id="plPct">0%</b></p>
+        <div class="pl-rail"><i id="plFill"></i></div>
+        <p class="pl-skip"><span class="pl-skip-click">Click</span><span class="pl-skip-tap">Tap</span> anywhere to skip</p>
+      </div>
     </div>
   </div>
 

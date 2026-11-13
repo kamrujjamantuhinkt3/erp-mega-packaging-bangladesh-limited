@@ -34,30 +34,20 @@
 
   let session = checkSession();
 
-  /* ---------- Preloader ---------- */
+  /* ---------- After the preloader ---------- */
 
-  // The carton takes ~2.2s to fold and tape; the screen then splits open
-  const PACKING_MS = 2250;
-  const OPENING_MS = 1450;
-
-  // The page and its brand fonts, so the reveal never shows a font swap
-  const pageLoaded = new Promise((resolve) => {
-    if (document.readyState === 'complete') resolve();
-    else window.addEventListener('load', resolve, { once: true });
-  }).then(() => document.fonts.ready);
-
-  async function playPreloader() {
-    const preloader = document.getElementById('preloader');
-    // Wait for the packing animation and the page (but never more than 6s on a slow connection)
-    await Promise.all([wait(reduceMotion ? 300 : PACKING_MS), Promise.race([pageLoaded, wait(6000)])]);
-    body.classList.add('is-ready');
-    await wait(reduceMotion ? 50 : OPENING_MS);
-    preloader.remove();
-
+  function focusUsername() {
     // Skip on touch screens so the on-screen keyboard doesn't pop up uninvited
     if (window.matchMedia('(pointer: fine)').matches && document.activeElement === body) {
       username.focus({ preventScroll: true });
     }
+  }
+
+  // assets/js/preloader.js announces when the sign-in has been uncovered
+  if (document.getElementById('preloader')) {
+    document.addEventListener('preloader:done', focusUsername, { once: true });
+  } else {
+    focusUsername();
   }
 
   /* ---------- Errors ---------- */
@@ -185,6 +175,4 @@
   window.addEventListener('pageshow', (event) => {
     if (event.persisted) window.location.reload();
   });
-
-  playPreloader();
 })();
