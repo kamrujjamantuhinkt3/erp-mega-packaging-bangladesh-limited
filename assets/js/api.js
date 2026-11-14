@@ -29,7 +29,11 @@ const Api = (() => {
 
   return {
     session: () => request('session.php'),
-    login: (username, password) => request('login.php', { method: 'POST', data: { username, password } }),
+    // step one: email or username + password (texts a one-time code to the account's mobile)
+    login: (identifier, password) => request('login.php', { method: 'POST', data: { identifier, password } }),
+    // step two: the one-time code
+    verifyOtp: (code) => request('verify-otp.php', { method: 'POST', data: { code } }),
+    resendOtp: () => request('resend-otp.php', { method: 'POST' }),
     logout: () => request('logout.php', { method: 'POST' }),
   };
 })();
