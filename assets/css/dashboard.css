@@ -1,4 +1,38 @@
-/* Mega Packaging ERP: dashboard (blank for now) */
+/* =====================================================================
+   Mega Packaging ERP: dashboard
+   The welcome, written out by hand, then the six departments.
+   Light and calm, like the sign-in page.
+   ===================================================================== */
+
+:root {
+  /* Brand (from the Mega Packaging logo) */
+  --navy: #12204a;
+  --brand: #0b4fbf;
+  --brand-deep: #0942a8;
+  --brand-soft: #eaf1fd;
+  --brand-line: #c8d8f5;
+
+  /* Interface */
+  --ink: #0f1d40;
+  --ink-2: #3b4766;
+  --muted: #6b7590;
+  --faint: #98a1b5;
+  --line: #e3e8f0;
+  --line-strong: #cdd5e2;
+  --surface: #ffffff;
+  --page: #f5f7fa;
+
+  /* the hand-written welcome: navy into the brand blue */
+  --pen-1: #12204a;
+  --pen-2: #0b4fbf;
+
+  --font-head: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-bn: 'Nirmala UI', 'Noto Sans Bengali', 'Kohinoor Bangla', 'Bangla Sangam MN', 'Shonar Bangla', sans-serif;
+  --font-hand: 'Dancing Script', 'Segoe Script', 'Brush Script MT', cursive;
+
+  --ease-out: cubic-bezier(.2, .7, .2, 1);
+}
 
 *,
 *::before,
@@ -6,15 +40,514 @@
   box-sizing: border-box;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  margin: 0;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  background: #f5f7fa;
-  color: #1a1a2e;
-  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Hidden until dashboard.js confirms the user is signed in */
 .is-checking body {
   visibility: hidden;
+}
+
+img,
+svg {
+  display: block;
+}
+
+::selection {
+  background: rgba(11, 79, 191, .18);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------------
+   The bar along the top: the company, who is signed in, sign out
+   --------------------------------------------------------------------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 68px;
+  padding: 0 clamp(16px, 4vw, 40px);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.topbar__brand img {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px -6px rgba(18, 32, 74, .45);
+}
+
+.topbar__brand b {
+  display: block;
+  font: 700 16px/1.2 var(--font-head);
+  letter-spacing: -.01em;
+  color: var(--navy);
+  white-space: nowrap;
+}
+
+.topbar__brand small {
+  display: block;
+  margin-top: 1px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.topbar__brand:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.topbar__user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.user__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  box-shadow: inset 0 0 0 1px var(--brand-line);
+  font: 700 13px/1 var(--font-head);
+  letter-spacing: .02em;
+  color: var(--brand);
+}
+
+.user__name {
+  max-width: 220px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  font: 600 13.5px/1 var(--font-body);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: color .2s, background-color .2s, border-color .2s;
+}
+
+.signout svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.signout:hover {
+  border-color: var(--brand-line);
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.signout:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.signout:disabled {
+  opacity: .6;
+  cursor: progress;
+}
+
+/* ---------------------------------------------------------------------
+   The welcome, in a hand: each line is uncovered left to right
+   (dashboard.js moves the reveal and the nib), its outline draws
+   itself, then the ink fills in
+   --------------------------------------------------------------------- */
+
+.home {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(30px, 6vh, 64px) clamp(16px, 4vw, 32px) 40px;
+}
+
+.welcome {
+  text-align: center;
+}
+
+.welcome h1 {
+  margin: 0;
+  line-height: 1;
+}
+
+.ink {
+  display: block;
+  width: min(100%, 820px);
+  height: auto;
+  aspect-ratio: 6.3;   /* about right until dashboard.js measures the real thing */
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.ink-a { stop-color: var(--pen-1); }
+.ink-b { stop-color: var(--pen-2); }
+
+.ink-line {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  text-anchor: middle;
+  fill: url(#inkFill);
+  fill-opacity: 0;
+  stroke: var(--pen-2);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+  stroke-dasharray: 900;
+  stroke-dashoffset: 900;
+}
+
+.ink-line.l1 { font-size: 46px; }
+.ink-line.l2,
+.ink-line.l3 { font-size: 66px; }
+
+/* each line's timing comes from dashboard.js, which also moves its reveal */
+.ink.go .ink-line {
+  animation:
+    ink-draw calc(var(--ms, 1000) * 1ms) calc(var(--at, 0) * 1ms) ease-out forwards,
+    ink-fill .8s calc((var(--at, 0) + var(--ms, 1000) * .6) * 1ms) ease-out forwards;
+}
+
+.ink.done .ink-line {
+  fill-opacity: 1;
+  stroke-dashoffset: 0;
+  stroke-opacity: .25;
+  animation: none;
+}
+
+@keyframes ink-draw { to { stroke-dashoffset: 0; } }
+@keyframes ink-fill { to { fill-opacity: 1; stroke-opacity: .25; } }
+
+/* the pen's nib, riding the edge of the writing */
+.ink-nib {
+  fill: var(--pen-2);
+  opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(11, 79, 191, .55));
+  transition: opacity .2s;
+}
+
+/* ---------------------------------------------------------------------
+   The departments
+   --------------------------------------------------------------------- */
+
+.departments {
+  margin-top: clamp(30px, 5vh, 50px);
+}
+
+.departments__title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 18px;
+  font: 700 12.5px/1 var(--font-head);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.departments__title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.depts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dept {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: start;
+  min-width: 0;
+  padding: 24px 24px 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 1px 2px rgba(15, 29, 64, .04);
+  transition: transform .3s var(--ease-out), box-shadow .3s, border-color .3s;
+}
+
+.dept:hover {
+  transform: translateY(-4px);
+  border-color: var(--brand-line);
+  box-shadow: 0 22px 40px -26px rgba(15, 29, 64, .4);
+}
+
+/* the cards rise into place once the page is shown */
+.is-ready .dept {
+  animation: dept-in .7s var(--ease-out) backwards;
+  animation-delay: calc(.35s + var(--i, 0) * .08s);
+}
+
+@keyframes dept-in {
+  from { opacity: 0; transform: translateY(16px); }
+}
+
+.dept__icon {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 18px;
+  border-radius: 15px;
+  background: var(--brand-soft);
+  color: var(--brand);
+  transition: background-color .3s, color .3s, box-shadow .3s;
+}
+
+.dept:hover .dept__icon {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 0 10px 20px -10px rgba(11, 79, 191, .7);
+}
+
+.dept__icon svg {
+  width: 29px;
+  height: 29px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dept__name {
+  margin: 0;
+  font: 700 17.5px/1.3 var(--font-head);
+  letter-spacing: -.01em;
+  color: var(--ink);
+}
+
+.dept__desc {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* the icons' details (the same icons as the sign-in page) */
+.ic-coin text {
+  fill: currentColor;
+  stroke: none;
+  font: 700 11.5px var(--font-bn);
+}
+
+.ic-seal circle {
+  fill: #ffb547;
+  stroke: none;
+}
+
+.ic-seal path {
+  stroke: var(--navy);
+  stroke-width: 1.6;
+}
+
+.ic-gear-big   { transform-origin: 8.6px 14.6px; }
+.ic-gear-small { transform-origin: 16.01px 8.04px; }
+
+.ic-seal {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* each icon comes alive under the pointer */
+.dept:hover .ic-coin            { animation: ic-flip .8s var(--ease-out); }
+.dept:hover .ic-wave            { animation: ic-wave 1.2s ease-out infinite; }
+.dept:hover .ic-wave + .ic-wave { animation-delay: .2s; }
+.dept:hover .ic-gear-big        { animation: ic-turn 3s linear infinite; }
+.dept:hover .ic-gear-small      { animation: ic-turn 2.25s linear infinite reverse; }
+.dept:hover .ic-seal            { animation: ic-stamp .45s cubic-bezier(.25, 1.4, .45, 1); }
+.dept:hover .ic-person          { animation: ic-bob 1.2s ease-in-out infinite; }
+.dept:hover .ic-person--back    { animation-delay: .3s; }
+.dept:hover .ic-box             { animation: ic-hop .9s ease-in-out infinite; }
+.dept:hover .ic-box + .ic-box   { animation-delay: .12s; }
+.dept:hover .ic-box + .ic-box + .ic-box { animation-delay: .24s; }
+
+@keyframes ic-flip  { from { transform: perspective(70px) rotateY(0); } to { transform: perspective(70px) rotateY(360deg); } }
+@keyframes ic-wave  { 0% { opacity: 0; transform: translateX(-2.5px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateX(2px); } }
+@keyframes ic-turn  { to { transform: rotate(360deg); } }
+@keyframes ic-stamp { from { opacity: 0; transform: scale(2.2) rotate(-20deg); } }
+@keyframes ic-bob   { 50% { transform: translateY(-1.6px); } }
+@keyframes ic-hop   { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-2px); } }
+
+/* ---------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------- */
+
+.foot {
+  padding: 22px 16px 26px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------
+   Smaller screens
+   --------------------------------------------------------------------- */
+
+@media (max-width: 960px) {
+  .depts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    height: 62px;
+  }
+
+  .topbar__brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .topbar__brand b {
+    font-size: 15px;
+  }
+
+  .user__name {
+    display: none;
+  }
+
+  .signout {
+    width: 38px;
+    padding: 0;
+  }
+
+  .signout span {
+    display: none;
+  }
+
+  /* the name takes three lines here (dashboard.js), so it's written large enough to read */
+  .ink {
+    aspect-ratio: 2.2;
+  }
+
+  .depts {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  /* each department on one row: the icon beside its name */
+  .dept {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 16px;
+    align-items: center;
+    padding: 16px 18px;
+    border-radius: 16px;
+  }
+
+  .dept__icon {
+    grid-row: span 2;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 0;
+    border-radius: 13px;
+  }
+
+  .dept__icon svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .dept__name {
+    align-self: end;
+    font-size: 16px;
+  }
+
+  .dept__desc {
+    align-self: start;
+    margin-top: 2px;
+    font-size: 13.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+
+  .is-ready .dept {
+    animation: none;
+  }
 }
