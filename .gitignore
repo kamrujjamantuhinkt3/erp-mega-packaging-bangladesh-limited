@@ -1,0 +1,9 @@
+# holds the database password: lives only on your computer and the server, never in git
+api/core/db.config.php
+
+# sign-in sessions written by PHP
+api/private/sessions/
+
+# upload bundles (they carry db.config.php), zipped or unzipped
+*.zip
+erp-upload/

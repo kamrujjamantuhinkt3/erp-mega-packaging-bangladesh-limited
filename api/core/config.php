@@ -10,14 +10,12 @@ declare(strict_types=1);
 const APP_ENV = 'development';
 
 /*
- * Placeholder account (sign in with the username OR the email).
- * Temporary: accounts move to a MySQL `users` table when user management is built.
+ * Accounts live in the MySQL `users` table (see db.php); the database details are in
+ * db.config.php. The administrator is made on the setup page (setup.html), which asks
+ * for the setup key: the database password written in db.config.php.
  */
-const PLACEHOLDER_USERNAME = 'admin';
-const PLACEHOLDER_EMAIL    = 'admin@megapackaging.test';
-const PLACEHOLDER_PASSWORD = 'admin123';
-const PLACEHOLDER_NAME     = 'Administrator';
-const PLACEHOLDER_MOBILE   = '+8801700000000';   // where the one-time code is sent
+const SETUP_MAX_ATTEMPTS    = 8;    // wrong setup keys from one address...
+const SETUP_LOCKOUT_MINUTES = 15;   // ...within this many minutes, and that address waits it out
 
 /* Step two of sign-in: a one-time code sent by SMS to the account's mobile */
 const OTP_LENGTH       = 6;

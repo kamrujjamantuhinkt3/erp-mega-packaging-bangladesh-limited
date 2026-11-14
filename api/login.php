@@ -3,7 +3,7 @@
  * POST api/login.php   body: {"identifier": "email or username", "password": "..."}
  * Step one of sign-in. A right password doesn't sign in yet: it texts a one-time code to
  * the account's mobile and replies with the code's status (step two is api/verify-otp.php).
- * Replies 200, or 401 / 403 / 422 with an error message.
+ * Replies 200, or 401 / 403 / 409 (no administrator yet) / 422 / 503 (database) with an error message.
  */
 declare(strict_types=1);
 
@@ -22,6 +22,9 @@ if ($identifier === '' || $password === '') {
 
 $user = find_user($identifier);
 if (!password_matches($user, $password)) {
+    if ((int) db()->query('SELECT COUNT(*) FROM users')->fetchColumn() === 0) {
+        json_out(['ok' => false, 'error' => 'There is no administrator account yet. Open setup.html to create one.'], 409);
+    }
     json_out(['ok' => false, 'error' => 'Incorrect email, username or password.'], 401);
 }
 

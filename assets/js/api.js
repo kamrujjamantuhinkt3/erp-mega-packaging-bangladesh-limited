@@ -35,5 +35,9 @@ const Api = (() => {
     verifyOtp: (code) => request('verify-otp.php', { method: 'POST', data: { code } }),
     resendOtp: () => request('resend-otp.php', { method: 'POST' }),
     logout: () => request('logout.php', { method: 'POST' }),
+    // setup.html: is the database ready, and is there an administrator yet?
+    setupStatus: () => request('setup.php'),
+    // setup.html: create (or replace) the administrator; needs the setup key
+    setup: (details) => request('setup.php', { method: 'POST', data: details }),
   };
 })();

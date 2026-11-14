@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#eef2f8">
+  <title>Administrator setup · Mega Packaging ERP</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Loaded without blocking, so the page still opens if the internet is down -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="assets/css/setup.css">
+  <script src="assets/js/api.js" defer></script>
+  <script src="assets/js/setup.js" defer></script>
+</head>
+<body>
+
+  <!-- Administrator setup: the database check, then the administrator's details (api/setup.php).
+       Delete this page and api/setup.php from the server once the administrator is set. -->
+  <main class="setup">
+    <header class="setup__brand">
+      <img src="assets/images/mega-logo-badge.webp" width="440" height="440" alt="Mega Packaging Bangladesh Limited">
+      <div>
+        <b>Mega Packaging ERP</b>
+        <span>Administrator setup</span>
+      </div>
+    </header>
+
+    <section class="card" aria-live="polite">
+
+      <!-- 1. Checking the database -->
+      <div class="pane is-active" id="paneCheck">
+        <div class="check">
+          <span class="check__spinner" aria-hidden="true"></span>
+          <p>Connecting to the database…</p>
+        </div>
+      </div>
+
+      <!-- 2. The database isn't ready: what's wrong, and where to fix it -->
+      <div class="pane" id="paneProblem">
+        <span class="badge badge--warn" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+        </span>
+        <h1 class="card__title">The database isn't ready</h1>
+        <p class="problem" id="problemText"></p>
+        <ol class="howto">
+          <li>Open <code>api/core/db.config.php</code> in the ERP folder.</li>
+          <li>Copy the database <b>name</b>, <b>user</b> and <b>password</b> from hPanel → Databases → Management (with the <code>u…_</code> prefix).</li>
+          <li>Keep the host as <code>localhost</code> on Hostinger, save the file, then try again.</li>
+        </ol>
+        <button class="btn btn--primary" type="button" id="retryBtn">
+          <span class="btn__label">Try again</span>
+          <span class="btn__icon" aria-hidden="true">
+            <svg class="btn__arrow" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/></svg>
+            <span class="btn__spinner"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- 3. The administrator's details, behind the setup key -->
+      <form class="pane" id="paneForm" novalidate>
+        <span class="badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+        </span>
+        <h1 class="card__title" id="formTitle">Create the administrator</h1>
+        <p class="card__lead" id="formLead">This is the first account of the ERP. It signs in with a password, then a code texted to its mobile.</p>
+
+        <div class="alert alert--info" id="existsNote">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>An administrator already exists. Saving replaces its details and password, and signs it out everywhere.</span>
+        </div>
+
+        <div class="alert" id="formAlert" role="alert">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <span class="alert__text"></span>
+        </div>
+
+        <fieldset class="group">
+          <legend class="group__title"><span>1</span> Setup key</legend>
+          <div class="field" data-field="key">
+            <label class="field__label" for="key">Setup key</label>
+            <div class="field__control">
+              <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg>
+              <input class="field__input field__input--password" id="key" name="key" type="password" autocomplete="off" spellcheck="false" placeholder="The database password" required>
+              <button class="field__toggle" type="button" aria-controls="key" aria-pressed="false" aria-label="Show setup key">
+                <svg class="icon-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.73 5.08a10.74 10.74 0 0 1 11.2 6.57 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-1.44 2.49"/><path d="M14.08 14.16a3 3 0 0 1-4.24-4.24"/><path d="M17.48 17.5a10.75 10.75 0 0 1-15.42-5.15 1 1 0 0 1 0-.7 10.75 10.75 0 0 1 4.45-5.14"/><path d="m2 2 20 20"/></svg>
+              </button>
+            </div>
+            <p class="field__hint">The database password, exactly as written in <code>api/core/db.config.php</code>.</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="group">
+          <legend class="group__title"><span>2</span> Administrator</legend>
+          <div class="grid">
+            <div class="field" data-field="name">
+              <label class="field__label" for="name">Full name</label>
+              <div class="field__control">
+                <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input class="field__input" id="name" name="name" type="text" autocomplete="name" maxlength="120" placeholder="e.g. Kamrujjaman Tuhin" required>
+              </div>
+            </div>
+
+            <div class="field" data-field="username">
+              <label class="field__label" for="username">Username</label>
+              <div class="field__control">
+                <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>
+                <input class="field__input" id="username" name="username" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="50" placeholder="e.g. admin" required>
+              </div>
+            </div>
+
+            <div class="field" data-field="email">
+              <label class="field__label" for="email">Email</label>
+              <div class="field__control">
+                <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <input class="field__input" id="email" name="email" type="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="190" placeholder="you@megapackagingbd.com" required>
+              </div>
+            </div>
+
+            <div class="field" data-field="mobile">
+              <label class="field__label" for="mobile">Mobile number</label>
+              <div class="field__control">
+                <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></svg>
+                <input class="field__input" id="mobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="01XXX-XXXXXX" required>
+              </div>
+            </div>
+
+            <div class="field" data-field="password">
+              <label class="field__label" for="password">Password</label>
+              <div class="field__control">
+                <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <input class="field__input field__input--password" id="password" name="password" type="password" autocomplete="new-password" minlength="10" maxlength="72" placeholder="At least 10 characters" required>
+                <button class="field__toggle" type="button" aria-controls="password" aria-pressed="false" aria-label="Show password">
+                  <svg class="icon-eye" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.73 5.08a10.74 10.74 0 0 1 11.2 6.57 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-1.44 2.49"/><path d="M14.08 14.16a3 3 0 0 1-4.24-4.24"/><path d="M17.48 17.5a10.75 10.75 0 0 1-15.42-5.15 1 1 0 0 1 0-.7 10.75 10.75 0 0 1 4.45-5.14"/><path d="m2 2 20 20"/></svg>
+                </button>
+              </div>
+              <div class="meter" id="meter" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            </div>
+
+            <div class="field" data-field="password2">
+              <label class="field__label" for="password2">Confirm password</label>
+              <div class="field__control">
+                <svg class="field__icon" viewBox="0 0 24 24" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><path d="m9.5 16 1.8 1.8 3.2-3.3" class="match-tick"/></svg>
+                <input class="field__input" id="password2" name="password2" type="password" autocomplete="new-password" maxlength="72" placeholder="Type it again" required>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <button class="btn btn--primary" type="submit" id="saveBtn">
+          <span class="btn__label">Create administrator</span>
+          <span class="btn__icon" aria-hidden="true">
+            <svg class="btn__arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <span class="btn__spinner"></span>
+          </span>
+        </button>
+      </form>
+
+      <!-- 4. Done -->
+      <div class="pane" id="paneDone">
+        <span class="badge badge--done" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" pathLength="1"/></svg>
+        </span>
+        <h1 class="card__title" id="doneTitle">Administrator ready</h1>
+        <p class="card__lead">Sign in with the username or email and the password you just chose. The sign-in code goes to the mobile below.</p>
+
+        <dl class="summary">
+          <div><dt>Name</dt><dd id="doneName"></dd></div>
+          <div><dt>Username</dt><dd id="doneUsername"></dd></div>
+          <div><dt>Email</dt><dd id="doneEmail"></dd></div>
+          <div><dt>Mobile</dt><dd id="doneMobile"></dd></div>
+        </dl>
+
+        <div class="alert alert--warn is-visible">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>
+          <span>Now delete <code>setup.html</code> and <code>api/setup.php</code> from the server (File Manager → public_html/erp). Upload them again only when the administrator needs resetting.</span>
+        </div>
+
+        <a class="btn btn--primary" href="login.html">
+          <span class="btn__label">Go to sign in</span>
+          <span class="btn__icon" aria-hidden="true">
+            <svg class="btn__arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </span>
+        </a>
+      </div>
+    </section>
+
+    <p class="setup__foot">© <span id="year">2026</span> Mega Packaging Bangladesh Limited</p>
+  </main>
+
+</body>
+</html>

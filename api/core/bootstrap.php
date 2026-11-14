@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
 
 /* ---------- Requests & replies ---------- */
 
@@ -55,10 +56,24 @@ function is_https(): bool
         || strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
 }
 
+/**
+ * Sessions are kept in api/private/sessions, inside the ERP's own folder and away
+ * from every other site on the hosting account (that folder is never served).
+ */
 function start_session(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) {
         return;
+    }
+    $dir = dirname(__DIR__) . '/private/sessions';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0700, true);
+    }
+    if (is_dir($dir) && is_writable($dir)) {
+        session_save_path($dir);
+        // this folder is ours to tidy: clear out old sessions now and then
+        ini_set('session.gc_probability', '1');
+        ini_set('session.gc_divisor', '100');
     }
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');
@@ -109,37 +124,62 @@ function csrf_valid(): bool
 
 /* ---------- Accounts ---------- */
 
-/** The account an email address or username belongs to, or null (placeholder: one account) */
+/** The active account an email address or username belongs to (from the users table), or null */
 function find_user(string $identifier): ?array
 {
-    $id = strtolower(trim($identifier));
-    $user = [
-        'username' => PLACEHOLDER_USERNAME,
-        'email'    => PLACEHOLDER_EMAIL,
-        'name'     => PLACEHOLDER_NAME,
-        'mobile'   => PLACEHOLDER_MOBILE,
-    ];
-    // both compared every time, so the response time doesn't hint at which one matched
-    $byUsername = hash_equals(strtolower($user['username']), $id);
-    $byEmail    = hash_equals(strtolower($user['email']), $id);
-    return ($byUsername || $byEmail) ? $user : null;
+    $id = trim($identifier);
+    if ($id === '' || strlen($id) > 190) {
+        return null;
+    }
+    $stmt = db()->prepare(
+        'SELECT id, username, email, name, mobile, password_hash
+           FROM users
+          WHERE (username = ? OR email = ?) AND is_active = 1
+          LIMIT 1'
+    );
+    $stmt->execute([$id, $id]);   // the table's collation ignores letter case
+    $user = $stmt->fetch();
+    return $user === false ? null : $user;
 }
 
-/** The password check runs even when no account matched, for the same reason */
+/**
+ * The password check runs even when no account matched (against a stand-in hash),
+ * so the response time doesn't hint at which usernames exist
+ */
 function password_matches(?array $user, string $password): bool
 {
-    $matches = hash_equals(PLACEHOLDER_PASSWORD, $password);
-    return $user !== null && $matches;
+    $hash = $user['password_hash'] ?? '$2y$10$o0RFWnkgpc1Wo0Mlz6KZl.TBsKulZtg.gj4xpydxPHItnyM14QF5G';
+    $matches = password_verify($password, $hash);
+    if ($user === null || !$matches) {
+        return false;
+    }
+    // PHP's hashing gets stronger over the years: upgrade the stored hash when it does
+    if (password_needs_rehash($hash, PASSWORD_DEFAULT)) {
+        db()->prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+            ->execute([password_hash($password, PASSWORD_DEFAULT), $user['id']]);
+    }
+    return true;
 }
 
-/** The signed-in user (both steps done), or null */
+/**
+ * The signed-in user (both steps done), or null. Checked against the users table each time,
+ * so a deactivated account, or one whose password changed since, is signed out.
+ */
 function current_user(): ?array
 {
     $user = $_SESSION['user'] ?? null;
-    if (!is_array($user) || !isset($user['username'])) {
+    if (!is_array($user) || !isset($user['id'])) {
         return null;
     }
-    return ['username' => $user['username'], 'name' => $user['name'] ?? $user['username']];
+    $stmt = db()->prepare('SELECT username, name, is_active, password_changed_at FROM users WHERE id = ?');
+    $stmt->execute([$user['id']]);
+    $row = $stmt->fetch();
+    $changed = $row && $row['password_changed_at'] !== null ? strtotime($row['password_changed_at']) : 0;
+    if (!$row || (int) $row['is_active'] !== 1 || $changed > (int) $user['signed_in']) {
+        unset($_SESSION['user']);
+        return null;
+    }
+    return ['username' => $row['username'], 'name' => $row['name']];
 }
 
 /* ---------- Step two: the one-time code ---------- */
@@ -148,7 +188,7 @@ function current_user(): ?array
 function begin_otp(array $user): array
 {
     session_regenerate_id(true);
-    unset($_SESSION['user']);
+    unset($_SESSION['user'], $user['password_hash']);   // the hash never goes into the session
     $_SESSION['otp'] = ['user' => $user, 'sends' => 0, 'attempts' => 0];
     return send_otp();
 }
@@ -232,8 +272,9 @@ function verify_otp(string $code): array
     $user = $otp['user'];
     unset($_SESSION['otp']);
     session_regenerate_id(true);
-    $_SESSION['user'] = ['username' => $user['username'], 'name' => $user['name'], 'signed_in' => time()];
+    $_SESSION['user'] = ['id' => $user['id'], 'username' => $user['username'], 'name' => $user['name'], 'signed_in' => time()];
     unset($_SESSION['csrf']);   // a fresh token for the signed-in session
+    db()->prepare('UPDATE users SET last_login_at = ? WHERE id = ?')->execute([date('Y-m-d H:i:s'), $user['id']]);
     return ['ok' => true];
 }
 
@@ -275,7 +316,39 @@ function send_sms(string $to, string $message): void
     error_log('[SMS to ' . $to . '] ' . $message);
 }
 
-/* Every endpoint gets a session and safe default headers */
+/* A database error mid-request still answers in JSON; the detail goes to the error log */
+set_exception_handler(static function (Throwable $e): void {
+    error_log('Mega ERP: ' . $e);
+    $message = $e instanceof PDOException
+        ? 'The database could not complete the request. Please try again.'
+        : 'Something went wrong on the server. Please try again.';
+    if (APP_ENV === 'development') {
+        $message .= ' (' . $e->getMessage() . ')';
+    }
+    json_out(['ok' => false, 'error' => $message], $e instanceof PDOException ? 503 : 500);
+});
+
+/**
+ * Turns away a request sent from a page on any other address than the ERP's own
+ * ('origin' in db.config.php). Browsers always say where a POST comes from.
+ */
+function require_origin(): void
+{
+    $origin = (string) ($_SERVER['HTTP_ORIGIN'] ?? '');
+    if ($origin === '') {
+        return;
+    }
+    $want = rtrim(strtolower($origin), '/');
+    foreach ((array) (db_config()['origin'] ?? []) as $allowed) {
+        if (rtrim(strtolower((string) $allowed), '/') === $want) {
+            return;
+        }
+    }
+    json_out(['ok' => false, 'error' => 'Refused: this page is not on the address set as "origin" in api/core/db.config.php.'], 403);
+}
+
+/* Every endpoint checks where the request came from, and gets a session and safe default headers */
+require_origin();
 start_session();
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
