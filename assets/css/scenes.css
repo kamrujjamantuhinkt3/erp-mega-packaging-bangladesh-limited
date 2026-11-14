@@ -1,0 +1,1145 @@
+/* =====================================================================
+   Mega Packaging ERP: the departments at work (the dashboard's scenes)
+
+   Every part's resting style is the finished picture; the keyframes only
+   say where it starts from. So a scene plays whenever dashboard.js puts
+   .is-playing on its card, as often as it likes, and anyone who asks for
+   less motion simply sees the finished picture. A play lasts 2.8 s.
+   ===================================================================== */
+
+.dept {
+  --play: 2800ms;
+}
+
+/* shared pieces */
+.sc-pill { fill: #fff; }
+
+.bx-top   { fill: #ddb176; }
+.bx-side  { fill: #b07d43; }
+.bx-front { fill: #c9965a; }
+.bx-tape  { fill: var(--brand); }
+
+@keyframes pop     { from { opacity: 0; transform: scale(.3); } }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes fade-up { from { opacity: 0; transform: translateY(3px); } }
+@keyframes grow-up { from { transform: scaleY(0); } }
+@keyframes grow-x  { from { transform: scaleX(0); } }
+@keyframes draw    { from { stroke-dashoffset: 1.02; } }
+@keyframes blink   { 50% { opacity: .25; } }
+
+/* ---------------------------------------------------------------------
+   1 · Accounts: Taka notes fan out and are totalled; the cash book is ticked
+   --------------------------------------------------------------------- */
+
+.acc-note {
+  transform-box: view-box;
+  transform-origin: 118px 113px;
+  transform: rotate(var(--a)) translateY(0);
+}
+
+.is-playing .acc-note {
+  animation: acc-fan .6s cubic-bezier(.2, .9, .3, 1.12) backwards;
+  animation-delay: var(--d);
+}
+
+@keyframes acc-fan {
+  from { opacity: 0; transform: rotate(0deg) translateY(12px); }
+}
+
+.nt--1000 { --tone: #7c4dab; --tint: #f3ebfa; --deep: #4a1f73; }
+.nt--500  { --tone: #3c8a5d; --tint: #e7f4ec; --deep: #1f5a3a; }
+.nt--100  { --tone: #3a6db5; --tint: #e6eef9; --deep: #1f4682; }
+
+.nt-body {
+  fill: var(--tint);
+  stroke: var(--tone);
+  stroke-width: 1.2;
+}
+
+.nt-frame {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: .8;
+  opacity: .7;
+}
+
+.nt-thread {
+  fill: var(--tone);
+  opacity: .5;
+}
+
+.nt-rose {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: .7;
+  opacity: .5;
+}
+
+.nt-bank {
+  font: 700 6px var(--font-head);
+  letter-spacing: .14em;
+  fill: var(--tone);
+}
+
+.nt-bn,
+.nt-words {
+  font: 600 6.6px var(--font-bn);
+  fill: var(--tone);
+}
+
+.nt-tk {
+  font: 700 20px var(--font-bn);
+  fill: var(--deep);
+}
+
+.nt-val {
+  font: 800 25px var(--font-head);
+  letter-spacing: -.01em;
+  fill: var(--deep);
+}
+
+/* the running total: ৳100, then ৳600, then ৳1,600 as each note lands */
+.acc-total {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .acc-total {
+  animation: acc-bump .5s ease-out 1.2s;
+}
+
+@keyframes acc-bump {
+  40% { transform: scale(1.07); }
+}
+
+.acc-total rect {
+  fill: var(--navy);
+}
+
+.acc-amt {
+  font: 700 10.5px var(--font-body);
+  fill: #fff;
+}
+
+.acc-lbl {
+  font: 600 5.4px var(--font-head);
+  letter-spacing: .22em;
+  fill: rgba(255, 255, 255, .62);
+}
+
+.acc-amt--1,
+.acc-amt--2 {
+  opacity: 0;
+}
+
+.is-playing .acc-amt--1 { animation: acc-flash .44s linear .3s backwards; }
+.is-playing .acc-amt--2 { animation: acc-flash .44s linear .74s backwards; }
+
+@keyframes acc-flash {
+  0%       { opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+
+.acc-amt--3 {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .acc-amt--3 {
+  animation: acc-land .35s ease-out 1.18s backwards;
+}
+
+@keyframes acc-land {
+  from { opacity: 0; transform: scale(1.18); }
+}
+
+/* the cash book beside them */
+.acc-book {
+  transform-box: view-box;
+  transform-origin: 254px 75px;
+  transform: rotate(3deg);
+}
+
+.acc-paper {
+  fill: #fff;
+  stroke: #e2e7ef;
+  stroke-width: .8;
+}
+
+.acc-title {
+  font: 800 6.2px var(--font-head);
+  letter-spacing: .12em;
+  fill: var(--ink);
+}
+
+.acc-sub {
+  font: 500 4.6px var(--font-body);
+  fill: var(--muted);
+}
+
+.acc-rule {
+  fill: none;
+  stroke: #e3e8f0;
+  stroke-width: 1;
+}
+
+.acc-rule--sum {
+  stroke: var(--navy);
+  stroke-width: .8;
+}
+
+.acc-bar {
+  fill: #e3e8f0;
+}
+
+.acc-val {
+  font: 600 5.8px var(--font-body);
+  fill: var(--ink);
+}
+
+.acc-tick {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.acc-tick circle {
+  fill: var(--success);
+}
+
+.acc-tick path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.is-playing .acc-tick {
+  animation: pop .38s cubic-bezier(.3, 1.6, .5, 1) backwards;
+  animation-delay: var(--d);
+}
+
+.acc-sum-lbl {
+  font: 700 4.6px var(--font-head);
+  letter-spacing: .16em;
+  fill: var(--muted);
+}
+
+.acc-sum {
+  font: 800 8px var(--font-head);
+  fill: var(--brand);
+}
+
+.is-playing .acc-sum {
+  animation: fade-up .35s ease-out 1.25s backwards;
+}
+
+.acc-pen-body { fill: var(--navy); }
+.acc-pen-band { fill: #c7a560; }
+.acc-pen-nib  { fill: #b8c2d1; }
+
+/* ---------------------------------------------------------------------
+   2 · Marketing: a social post gathers likes, comments, shares and reach
+   --------------------------------------------------------------------- */
+
+.mkt-body {
+  fill: #fff;
+  stroke: var(--navy);
+  stroke-width: 2.2;
+}
+
+.mkt-notch {
+  fill: var(--navy);
+}
+
+.mkt-name {
+  font: 700 5.4px var(--font-body);
+  fill: var(--ink);
+}
+
+.mkt-meta {
+  font: 500 4.2px var(--font-body);
+  fill: var(--muted);
+}
+
+.mkt-media {
+  fill: #eaf1fb;
+}
+
+.mkt-like {
+  fill: #e11d48;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .mkt-like {
+  animation: mkt-like .6s ease-out .15s backwards;
+}
+
+@keyframes mkt-like {
+  0%  { fill: #c4ccd8; transform: scale(1); }
+  45% { fill: #e11d48; transform: scale(1.45); }
+}
+
+.mkt-ico {
+  fill: none;
+  stroke: #8a94a6;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mkt-likes {
+  font: 700 4.8px var(--font-body);
+  fill: var(--ink);
+}
+
+.mkt-cap {
+  fill: #e3e8f0;
+}
+
+.mkt-bars rect {
+  fill: var(--brand);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.mkt-bars rect:last-child {
+  fill: #1e9be0;
+}
+
+.is-playing .mkt-bars rect {
+  animation: grow-up .5s cubic-bezier(.2, .8, .3, 1) backwards;
+  animation-delay: var(--d);
+}
+
+/* hearts rising off the post */
+.mkt-float {
+  opacity: 0;
+  fill: #e11d48;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .mkt-float {
+  animation: mkt-float 1.1s ease-out backwards;
+  animation-delay: var(--d);
+}
+
+@keyframes mkt-float {
+  0%   { opacity: 0; transform: translate(0, 0) scale(.6); }
+  20%  { opacity: .95; }
+  100% { opacity: 0; transform: translate(var(--fx), -44px) scale(1.15); }
+}
+
+.mkt-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .mkt-pop {
+  animation: pop .45s cubic-bezier(.3, 1.5, .5, 1) backwards;
+  animation-delay: var(--d);
+}
+
+.mkt-rose  { fill: #e11d48; }
+.mkt-royal { fill: var(--brand); }
+.mkt-badge { fill: #e11d48; }
+.mkt-white { fill: #fff; }
+
+.mkt-white-line {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mkt-badge-txt {
+  font: 800 5px var(--font-head);
+  fill: #fff;
+}
+
+.mkt-tag {
+  fill: #fff;
+}
+
+.mkt-tag-txt {
+  font: 600 6px var(--font-body);
+  fill: var(--ink);
+}
+
+.mkt-tag-ico {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mkt-up {
+  fill: none;
+  stroke: var(--success);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------------------
+   3 · Commercial: dollars arrive, the Letter of Credit fills in,
+       is signed, then the bank's stamp comes down
+   --------------------------------------------------------------------- */
+
+.usd-body  { fill: #e9f2e4; stroke: #4f7f4a; stroke-width: 1; }
+.usd-frame { fill: none; stroke: #6f9a69; stroke-width: .7; }
+.usd-seal  { fill: none; stroke: #6f9a69; stroke-width: .8; }
+
+.usd-sym {
+  font: 800 15px var(--font-head);
+  fill: #2f5d2b;
+}
+
+.usd-den {
+  font: 800 8px var(--font-head);
+  fill: #2f5d2b;
+}
+
+.usd-txt {
+  font: 700 3.8px var(--font-head);
+  letter-spacing: .16em;
+  fill: #4f7f4a;
+}
+
+.usd-coin-face { fill: #2f6b3a; }
+.usd-coin-rim  { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 1; }
+
+.usd-coin-sym {
+  font: 800 11px var(--font-head);
+  fill: #fff;
+}
+
+.is-playing .com-usd {
+  animation: com-slide .55s var(--ease-out) backwards;
+  animation-delay: var(--d);
+}
+
+@keyframes com-slide {
+  from { opacity: 0; transform: translateX(-18px); }
+}
+
+/* the coin turns over as the money arrives */
+.com-coin {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scaleX(1) scaleY(1);
+}
+
+.is-playing .com-coin {
+  animation: com-coin .75s ease-out .18s backwards;
+}
+
+@keyframes com-coin {
+  0%  { opacity: 0; transform: scaleX(.1) scaleY(.6); }
+  40% { opacity: 1; transform: scaleX(-1) scaleY(1); }
+  70% { transform: scaleX(.4) scaleY(1); }
+}
+
+.lc-paper {
+  fill: #fff;
+  stroke: #e2e7ef;
+  stroke-width: .8;
+}
+
+.lc-emblem {
+  fill: var(--navy);
+}
+
+.lc-emblem-ico {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lc-title {
+  font: 800 6px var(--font-head);
+  letter-spacing: .1em;
+  fill: var(--ink);
+}
+
+.lc-sub {
+  font: 500 4.2px var(--font-body);
+  fill: var(--muted);
+}
+
+.lc-rule {
+  fill: none;
+  stroke: #e3e8f0;
+  stroke-width: 1;
+}
+
+.lc-sigline {
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: .8;
+}
+
+.lc-lbl {
+  font: 700 4.1px var(--font-head);
+  letter-spacing: .12em;
+  fill: var(--muted);
+}
+
+.lc-val {
+  font: 600 5.4px var(--font-body);
+  fill: var(--ink);
+}
+
+.lc-bar {
+  fill: #e3e8f0;
+}
+
+/* the fields fill in one after another */
+.is-playing .com-row {
+  animation: com-row .4s var(--ease-out) backwards;
+  animation-delay: var(--d);
+}
+
+@keyframes com-row {
+  from { opacity: 0; transform: translateX(-5px); }
+}
+
+.com-amount rect {
+  fill: #eef4ff;
+  stroke: #cbdcff;
+  stroke-width: .8;
+}
+
+/* the amount is typed out */
+.com-amount-val {
+  font: 800 8.4px var(--font-head);
+  fill: var(--brand);
+}
+
+.is-playing .com-amount-val {
+  animation: com-type .6s steps(14, end) .66s backwards;
+}
+
+@keyframes com-type {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+
+/* signed: the name, then the underline, each inked as if by pen */
+.com-sign {
+  fill: none;
+  stroke: #1b2a6b;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 0;
+}
+
+.is-playing .com-sign--name {
+  animation: draw .8s ease-in-out 1s backwards;
+}
+
+.is-playing .com-sign--line {
+  animation: draw .3s ease-out 1.84s backwards;
+}
+
+/* the bank's rubber stamp comes down last */
+.com-stamp {
+  opacity: .92;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: rotate(-12deg) scale(1);
+}
+
+.is-playing .com-stamp {
+  animation: com-stamp .42s cubic-bezier(.3, 1.3, .5, 1) 2.14s backwards;
+}
+
+@keyframes com-stamp {
+  from { opacity: 0; transform: rotate(-28deg) scale(2.1); }
+}
+
+.com-stamp rect {
+  fill: none;
+  stroke: #c62828;
+  stroke-width: 1.8;
+}
+
+.com-stamp .lc-stamp-in {
+  stroke-width: .7;
+}
+
+.com-stamp text {
+  font: 800 6.6px var(--font-head);
+  letter-spacing: .08em;
+  fill: #c62828;
+}
+
+.com-stamp .lc-stamp-by {
+  font: 700 3.8px var(--font-head);
+  letter-spacing: .2em;
+}
+
+/* ---------------------------------------------------------------------
+   4 · Production: the line moves on one carton, the press prints the
+       Mega logo on the carton beneath it. When the play ends every
+       carton stands where its neighbour stood, so the picture is the same.
+   --------------------------------------------------------------------- */
+
+.prd-led {
+  fill: var(--success);
+}
+
+.is-playing .prd-led {
+  animation: blink .7s ease-in-out 4;
+}
+
+.prd-stat {
+  font: 700 5px var(--font-head);
+  letter-spacing: .14em;
+  fill: var(--ink);
+}
+
+.prd-gear {
+  fill: #e6ebf2;
+  stroke: var(--navy);
+  stroke-width: .62;
+  stroke-linejoin: round;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* two teeth each, so the gears end as they began */
+.is-playing .prd-gear--big   { animation: prd-gear-big var(--play) ease-in-out; }
+.is-playing .prd-gear--small { animation: prd-gear-small var(--play) ease-in-out; }
+
+@keyframes prd-gear-big {
+  0%        { transform: rotate(0deg); }
+  40%, 100% { transform: rotate(90deg); }
+}
+
+@keyframes prd-gear-small {
+  0%        { transform: rotate(0deg); }
+  40%, 100% { transform: rotate(-120deg); }
+}
+
+.prd-web {
+  fill: none;
+  stroke: #c9965a;
+  stroke-width: 1.6;
+}
+
+.prd-reel      { fill: #ddb176; stroke: #b07d43; stroke-width: 1.2; }
+.prd-reel-ring { fill: none; stroke: #c9965a; stroke-width: 1; }
+.prd-reel-hub  { fill: var(--navy); }
+
+.prd-reel-spokes {
+  fill: none;
+  stroke: #8a5a2b;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .prd-reel-spokes {
+  animation: prd-reel var(--play) ease-in-out;
+}
+
+@keyframes prd-reel {
+  0%        { transform: rotate(0deg); }
+  40%, 100% { transform: rotate(180deg); }
+}
+
+.prd-hood  { fill: #1d3170; }
+.prd-body  { fill: var(--navy); }
+.prd-panel { fill: #0b1736; }
+
+.prd-ptext {
+  font: 700 4.6px var(--font-head);
+  letter-spacing: .12em;
+  fill: #9cc2ff;
+}
+
+.prd-meter-bg {
+  fill: rgba(255, 255, 255, .15);
+}
+
+.prd-meter {
+  fill: #38bdf8;
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.is-playing .prd-meter {
+  animation: prd-meter var(--play) ease-in-out;
+}
+
+@keyframes prd-meter {
+  0%        { transform: scaleX(.15); }
+  60%, 100% { transform: scaleX(1); }
+}
+
+.prd-light--go   { fill: #22c55e; }
+.prd-light--wait { fill: #f59e0b; opacity: .45; }
+
+.prd-vent {
+  fill: none;
+  stroke: rgba(255, 255, 255, .12);
+  stroke-width: 1;
+}
+
+.prd-rod   { fill: #8796ad; }
+.prd-plate { fill: #aab7c9; }
+
+/* the head comes down once the carton is beneath it */
+.is-playing .prd-head {
+  animation: prd-press var(--play) ease-in-out;
+}
+
+@keyframes prd-press {
+  0%, 42%   { transform: translateY(0); }
+  49%, 53%  { transform: translateY(13px); }
+  62%, 100% { transform: translateY(0); }
+}
+
+.prd-floor { fill: none; stroke: #d5dce6; stroke-width: 1.2; }
+.prd-leg   { fill: #c3ccda; }
+
+.prd-belt {
+  fill: #e1e7ef;
+  stroke: #c3ccda;
+  stroke-width: 1;
+}
+
+/* one pitch (76) is exactly four dashes (19), so the belt ends as it began */
+.prd-belt-run {
+  fill: none;
+  stroke: #c3ccda;
+  stroke-width: 1.2;
+  stroke-dasharray: 6 13;
+}
+
+.is-playing .prd-belt-run {
+  animation: prd-belt var(--play) ease-in-out;
+}
+
+@keyframes prd-belt {
+  0%        { stroke-dashoffset: 0; }
+  38%, 100% { stroke-dashoffset: -76; }
+}
+
+.prd-rollers circle {
+  fill: #fff;
+  stroke: #c3ccda;
+  stroke-width: 1;
+}
+
+.prd-spokes path {
+  fill: none;
+  stroke: #98a1b5;
+  stroke-width: 1;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .prd-spokes path {
+  animation: prd-roll var(--play) ease-in-out;
+}
+
+@keyframes prd-roll {
+  0%        { transform: rotate(0deg); }
+  38%, 100% { transform: rotate(540deg); }
+}
+
+.is-playing .prd-line {
+  animation: prd-advance var(--play) ease-in-out;
+}
+
+@keyframes prd-advance {
+  0%        { transform: translateX(0); }
+  38%, 100% { transform: translateX(76px); }
+}
+
+/* the logo the press prints */
+.prd-print {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .prd-print {
+  animation: prd-print var(--play) linear;
+}
+
+@keyframes prd-print {
+  0%, 50%   { opacity: 0; transform: scale(.7); }
+  55%       { opacity: 1; transform: scale(1.12); }
+  62%, 100% { opacity: 1; transform: scale(1); }
+}
+
+/* ---------------------------------------------------------------------
+   5 · Store: a carton is shelved and scanned into stock
+   --------------------------------------------------------------------- */
+
+.sto-floor { fill: none; stroke: #d5dce6; stroke-width: 1.2; }
+.sto-post  { fill: var(--navy); }
+.sto-shelf { fill: #1d3170; }
+.sto-front { fill: #c9965a; }
+.sto-flap  { fill: #ddb176; }
+.sto-tape  { fill: var(--brand); }
+.sto-label { fill: #fff; }
+
+.sto-code {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: .7;
+}
+
+.is-playing .sto-new {
+  animation: sto-arrive .75s cubic-bezier(.2, .8, .3, 1.05) .1s backwards;
+}
+
+@keyframes sto-arrive {
+  from { opacity: 0; transform: translateX(64px); }
+  60%  { opacity: 1; }
+}
+
+.sto-gun {
+  fill: var(--navy);
+}
+
+.sto-window {
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.sto-beam {
+  opacity: 0;
+  fill: rgba(239, 68, 68, .18);
+}
+
+.sto-laser {
+  opacity: 0;
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+}
+
+.is-playing .sto-beam {
+  animation: sto-beam 1s ease-in-out .9s;
+}
+
+@keyframes sto-beam {
+  0%       { opacity: 0; }
+  15%, 80% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+
+.is-playing .sto-laser {
+  animation: sto-laser 1s ease-in-out .9s;
+}
+
+@keyframes sto-laser {
+  0%   { opacity: 0; transform: translateY(-3.5px); }
+  15%  { opacity: 1; }
+  50%  { transform: translateY(3.5px); }
+  80%  { opacity: 1; transform: translateY(-2px); }
+  100% { opacity: 0; transform: translateY(0); }
+}
+
+/* the label reads: a green flash */
+.is-playing .sto-label--new {
+  animation: sto-label .6s ease-out 1.75s;
+}
+
+@keyframes sto-label {
+  30% { fill: #bbf7d0; }
+}
+
+.sto-done {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .sto-done {
+  animation: pop .45s cubic-bezier(.3, 1.5, .5, 1) 1.9s backwards;
+}
+
+.sto-ok {
+  fill: var(--success);
+}
+
+.sto-ok-tick {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sto-done-txt {
+  font: 600 6px var(--font-body);
+  fill: var(--ink);
+}
+
+/* ---------------------------------------------------------------------
+   6 · HRM: the staff card swings on its lanyard, a fingerprint checks in,
+       the team is present and payroll is ready
+   --------------------------------------------------------------------- */
+
+.hrm-card {
+  transform-box: view-box;
+  transform-origin: 73px 11px;
+}
+
+.is-playing .hrm-card {
+  animation: hrm-swing 1.6s ease-in-out;
+}
+
+@keyframes hrm-swing {
+  0%  { transform: rotate(-5deg); }
+  30% { transform: rotate(3.5deg); }
+  58% { transform: rotate(-1.8deg); }
+  82% { transform: rotate(.6deg); }
+}
+
+.hrm-strap { fill: var(--brand); }
+.hrm-clip  { fill: #9aa6b8; }
+
+.hrm-card-body {
+  fill: #fff;
+  stroke: #e2e7ef;
+  stroke-width: .8;
+}
+
+.hrm-band {
+  fill: var(--navy);
+}
+
+.hrm-org {
+  font: 700 3.8px var(--font-head);
+  letter-spacing: .06em;
+  fill: #fff;
+}
+
+.hrm-org--sub {
+  font-size: 3px;
+  letter-spacing: .16em;
+  fill: rgba(255, 255, 255, .7);
+}
+
+.hrm-photo  { fill: #e8edf5; }
+.hrm-avatar { fill: #9aa8bf; }
+
+.hrm-id {
+  font: 700 5.2px var(--font-head);
+  letter-spacing: .06em;
+  fill: var(--ink);
+}
+
+.hrm-line {
+  fill: #e3e8f0;
+}
+
+.hrm-barcode {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.1;
+}
+
+.hrm-dev   { fill: var(--navy); }
+.hrm-glass { fill: #0b1736; }
+
+.hrm-fp path {
+  fill: none;
+  stroke: #3c4f80;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+/* the ridges light up under the finger */
+.hrm-fp--lit path {
+  stroke: #38bdf8;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 0;
+}
+
+.is-playing .hrm-fp--lit path {
+  animation: draw .9s ease-in-out .25s backwards;
+}
+
+.hrm-scan {
+  opacity: 0;
+  fill: none;
+  stroke: #7dd3fc;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.is-playing .hrm-scan {
+  animation: hrm-scan .95s ease-in-out .2s;
+}
+
+@keyframes hrm-scan {
+  0%   { opacity: 0; transform: translateY(0); }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(38px); }
+}
+
+.hrm-status {
+  font: 700 4.6px var(--font-head);
+  letter-spacing: .14em;
+}
+
+.hrm-status--scan {
+  opacity: 0;
+  fill: #7aa7d9;
+}
+
+.hrm-status--ok {
+  fill: #4ade80;
+}
+
+.is-playing .hrm-status--scan {
+  animation: hrm-flash 1.05s linear .15s backwards;
+}
+
+@keyframes hrm-flash {
+  0%       { opacity: 0; }
+  10%, 90% { opacity: 1; }
+  100%     { opacity: 0; }
+}
+
+.is-playing .hrm-status--ok {
+  animation: fade-in .3s ease-out 1.2s backwards;
+}
+
+.hrm-led {
+  fill: #22c55e;
+}
+
+/* amber while it reads, green once it knows who it is */
+.is-playing .hrm-led {
+  animation: hrm-led 1.2s steps(1, end);
+}
+
+@keyframes hrm-led {
+  from { fill: #f59e0b; }
+}
+
+.hrm-ok {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hrm-ok circle {
+  fill: var(--success);
+}
+
+.hrm-ok path {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.is-playing .hrm-ok {
+  animation: pop .45s cubic-bezier(.3, 1.6, .5, 1) 1.2s backwards;
+}
+
+.hrm-label {
+  font: 700 4.6px var(--font-head);
+  letter-spacing: .16em;
+  fill: var(--muted);
+}
+
+.hrm-mate {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hrm-mate circle {
+  stroke: #fff;
+  stroke-width: 1.8;
+}
+
+.hrm-mate text {
+  font: 700 5.6px var(--font-head);
+  fill: #fff;
+}
+
+.hrm-more rect {
+  fill: #eef2f8;
+}
+
+.hrm-more text {
+  font: 700 5.6px var(--font-head);
+  fill: #5b6475;
+}
+
+.is-playing .hrm-mate {
+  animation: pop .4s cubic-bezier(.3, 1.6, .5, 1) backwards;
+  animation-delay: var(--d);
+}
+
+.hrm-track {
+  fill: #e3e8f0;
+}
+
+.hrm-fill {
+  fill: var(--success);
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.is-playing .hrm-fill {
+  animation: grow-x .7s var(--ease-out) 1.55s backwards;
+}
+
+.hrm-note {
+  font: 500 5px var(--font-body);
+  fill: var(--muted);
+}
+
+.hrm-count {
+  font: 700 5.4px var(--font-head);
+  fill: var(--ink);
+}
+
+.hrm-pay {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.is-playing .hrm-pay {
+  animation: pop .45s cubic-bezier(.3, 1.5, .5, 1) 2.05s backwards;
+}
+
+.hrm-pay-ico {
+  fill: var(--brand-soft);
+}
+
+.hrm-pay-tk {
+  font: 700 6.4px var(--font-bn);
+  fill: var(--brand);
+}
+
+.hrm-pay-txt {
+  font: 600 5.6px var(--font-body);
+  fill: var(--ink);
+}

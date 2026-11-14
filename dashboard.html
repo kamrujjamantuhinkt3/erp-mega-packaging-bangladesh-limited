@@ -15,10 +15,23 @@
        Dancing Script is the hand the welcome is written in. -->
   <link rel="stylesheet" id="fontsCss" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800&family=Dancing+Script:wght@700&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="assets/css/dashboard.css">
+  <link rel="stylesheet" href="assets/css/scenes.css">
   <script src="assets/js/api.js" defer></script>
   <script src="assets/js/dashboard.js" defer></script>
 </head>
 <body>
+
+  <!-- Shared drawing aids for the department scenes -->
+  <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="shSoft" x="-30%" y="-30%" width="160%" height="170%">
+        <feDropShadow dx="0" dy="2.5" stdDeviation="3" flood-color="#0f1d40" flood-opacity=".13"/>
+      </filter>
+      <filter id="shTiny" x="-30%" y="-40%" width="160%" height="190%">
+        <feDropShadow dx="0" dy="1.4" stdDeviation="1.6" flood-color="#0f1d40" flood-opacity=".14"/>
+      </filter>
+    </defs>
+  </svg>
 
   <header class="topbar">
     <a class="topbar__brand" href="dashboard.html" aria-label="Mega Packaging ERP: dashboard">
@@ -30,10 +43,7 @@
     </a>
 
     <div class="topbar__user">
-      <span class="user" id="userChip">
-        <span class="user__avatar" id="userInitials" aria-hidden="true"></span>
-        <span class="user__name" id="userName"></span>
-      </span>
+      <span class="user__avatar" id="userInitials" aria-hidden="true"></span>
       <button class="signout" type="button" id="signOut">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 8.5V5.8A1.8 1.8 0 0 0 12.7 4H5.8A1.8 1.8 0 0 0 4 5.8v12.4A1.8 1.8 0 0 0 5.8 20h6.9a1.8 1.8 0 0 0 1.8-1.8v-2.7M10 12h10M17 9l3 3-3 3"/></svg>
         <span>Sign out</span>
@@ -43,9 +53,43 @@
 
   <main class="home">
 
-    <!-- The welcome, written out by hand (as in the RTGS Management System): assets/js/dashboard.js
-         uncovers each line behind a pen nib while its outline draws itself and the ink fills in -->
+    <!-- The welcome: who is here and the time (ticking), then the greeting written out by hand
+         (as in the RTGS Management System). assets/js/dashboard.js runs both. -->
     <section class="welcome" aria-labelledby="welcomeTitle">
+      <div class="hello">
+        <span class="hello__avatar" id="helloInitials" aria-hidden="true"></span>
+        <span class="hello__who">
+          <span class="hello__greet" id="helloGreet">Welcome</span>
+          <b class="hello__name" id="helloName"></b>
+        </span>
+        <span class="hello__sep" aria-hidden="true"></span>
+        <svg class="dial" id="dial" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <circle class="dial__face" cx="50" cy="50" r="47"/>
+          <g class="dial__ticks">
+            <line class="q" x1="50" y1="7" x2="50" y2="14"/>
+            <line x1="71.5" y1="12.8" x2="69.5" y2="16.3"/>
+            <line x1="87.2" y1="28.5" x2="83.7" y2="30.5"/>
+            <line class="q" x1="93" y1="50" x2="86" y2="50"/>
+            <line x1="87.2" y1="71.5" x2="83.7" y2="69.5"/>
+            <line x1="71.5" y1="87.2" x2="69.5" y2="83.7"/>
+            <line class="q" x1="50" y1="93" x2="50" y2="86"/>
+            <line x1="28.5" y1="87.2" x2="30.5" y2="83.7"/>
+            <line x1="12.8" y1="71.5" x2="16.3" y2="69.5"/>
+            <line class="q" x1="7" y1="50" x2="14" y2="50"/>
+            <line x1="12.8" y1="28.5" x2="16.3" y2="30.5"/>
+            <line x1="28.5" y1="12.8" x2="30.5" y2="16.3"/>
+          </g>
+          <line class="dial__hand dial__hand--h" x1="50" y1="50" x2="50" y2="29"/>
+          <line class="dial__hand dial__hand--m" x1="50" y1="50" x2="50" y2="17"/>
+          <line class="dial__hand dial__hand--s" x1="50" y1="59" x2="50" y2="12"/>
+          <circle class="dial__hub" cx="50" cy="50" r="3.6"/>
+        </svg>
+        <time class="clock" id="clock">
+          <span class="clock__time"><span id="clockHM">--:--</span><span class="clock__s" id="clockS"></span><span class="clock__ap" id="clockAP"></span></span>
+          <span class="clock__date" id="clockDate"></span>
+        </time>
+      </div>
+
       <h1 id="welcomeTitle">
         <span class="sr-only">Welcome to Mega Packaging Bangladesh Limited</span>
         <svg class="ink" id="welcomeInk" aria-hidden="true" focusable="false">
@@ -65,45 +109,432 @@
       </h1>
     </section>
 
-    <!-- The departments -->
+    <!-- The departments: each card shows its department at work. The scenes rest on their
+         finished picture and play when it's that department's turn, or under the pointer. -->
     <section class="departments" aria-labelledby="deptTitle">
-      <h2 class="departments__title" id="deptTitle">Departments</h2>
+      <div class="departments__head">
+        <h2 class="departments__title" id="deptTitle">Departments <span class="departments__count">6</span></h2>
+        <p class="departments__hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M9 9.5V4.8a1.8 1.8 0 0 1 3.6 0v5.4m0-1.4a1.8 1.8 0 0 1 3.6 0v1.6m0-.6a1.8 1.8 0 0 1 3.6 0V15a7 7 0 0 1-7 7h-1.4a6.4 6.4 0 0 1-4.9-2.3l-3.3-4a1.9 1.9 0 0 1 2.8-2.5L9 15.4V9.5"/></svg>
+          <span class="hint-pointer">Point at a department to see it at work</span>
+          <span class="hint-touch">Tap a department to see it at work</span>
+        </p>
+      </div>
 
       <ul class="depts">
+
+        <!-- 1 · Accounts: Taka notes fan out and are totalled; the cash book is ticked -->
         <li class="dept" style="--i:0">
-          <span class="dept__icon"><svg class="ic-coin" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="12" r="6.6" stroke-dasharray="1.4 1.9" opacity=".5"/><text x="12" y="16.2" text-anchor="middle">&#x9F3;</text></svg></span>
-          <h3 class="dept__name">Accounts Department</h3>
-          <p class="dept__desc">Vouchers &amp; ledgers</p>
+          <div class="dept__stage">
+            <svg class="scene" viewBox="0 0 320 150" aria-hidden="true" focusable="false">
+              <g class="acc-note" style="--a:-15deg; --d:0s">
+                <g transform="translate(66.4 36.2) scale(.6)" filter="url(#shSoft)">
+                  <g class="nt nt--100">
+                    <rect class="nt-body" width="172" height="86" rx="6"/>
+                    <rect class="nt-frame" x="5.5" y="5.5" width="161" height="75" rx="3.5"/>
+                    <rect class="nt-thread" x="66" y="5.5" width="2.4" height="75"/>
+                    <g class="nt-rose"><circle cx="37" cy="43" r="23"/><circle cx="37" cy="43" r="16"/><circle cx="37" cy="43" r="9"/><path d="M14 43h46M37 20v46M21 27l32 32M53 27 21 59"/></g>
+                    <text class="nt-bank" x="78" y="21">BANGLADESH BANK</text>
+                    <text class="nt-bn" x="78" y="32">বাংলাদেশ ব্যাংক</text>
+                    <text class="nt-tk" x="78" y="64">৳</text>
+                    <text class="nt-val" x="162" y="63" text-anchor="end">100</text>
+                    <text class="nt-words" x="162" y="75" text-anchor="end">একশত টাকা</text>
+                  </g>
+                </g>
+              </g>
+              <g class="acc-note" style="--a:15deg; --d:.14s">
+                <g transform="translate(66.4 36.2) scale(.6)" filter="url(#shSoft)">
+                  <g class="nt nt--500">
+                    <rect class="nt-body" width="172" height="86" rx="6"/>
+                    <rect class="nt-frame" x="5.5" y="5.5" width="161" height="75" rx="3.5"/>
+                    <rect class="nt-thread" x="66" y="5.5" width="2.4" height="75"/>
+                    <g class="nt-rose"><circle cx="37" cy="43" r="23"/><circle cx="37" cy="43" r="16"/><circle cx="37" cy="43" r="9"/><path d="M14 43h46M37 20v46M21 27l32 32M53 27 21 59"/></g>
+                    <text class="nt-bank" x="78" y="21">BANGLADESH BANK</text>
+                    <text class="nt-bn" x="78" y="32">বাংলাদেশ ব্যাংক</text>
+                    <text class="nt-tk" x="78" y="64">৳</text>
+                    <text class="nt-val" x="162" y="63" text-anchor="end">500</text>
+                    <text class="nt-words" x="162" y="75" text-anchor="end">পাঁচশত টাকা</text>
+                  </g>
+                </g>
+              </g>
+              <g class="acc-note" style="--a:0deg; --d:.28s">
+                <g transform="translate(66.4 36.2) scale(.6)" filter="url(#shSoft)">
+                  <g class="nt nt--1000">
+                    <rect class="nt-body" width="172" height="86" rx="6"/>
+                    <rect class="nt-frame" x="5.5" y="5.5" width="161" height="75" rx="3.5"/>
+                    <rect class="nt-thread" x="66" y="5.5" width="2.4" height="75"/>
+                    <g class="nt-rose"><circle cx="37" cy="43" r="23"/><circle cx="37" cy="43" r="16"/><circle cx="37" cy="43" r="9"/><path d="M14 43h46M37 20v46M21 27l32 32M53 27 21 59"/></g>
+                    <text class="nt-bank" x="78" y="21">BANGLADESH BANK</text>
+                    <text class="nt-bn" x="78" y="32">বাংলাদেশ ব্যাংক</text>
+                    <text class="nt-tk" x="78" y="64">৳</text>
+                    <text class="nt-val" x="162" y="63" text-anchor="end">1000</text>
+                    <text class="nt-words" x="162" y="75" text-anchor="end">এক হাজার টাকা</text>
+                  </g>
+                </g>
+              </g>
+              <g class="acc-total" filter="url(#shTiny)">
+                <rect x="62" y="116" width="112" height="24" rx="12"/>
+                <text class="acc-amt acc-amt--1" x="118" y="131.6" text-anchor="middle"><tspan class="acc-lbl">TOTAL</tspan><tspan dx="6">৳ 100</tspan></text>
+                <text class="acc-amt acc-amt--2" x="118" y="131.6" text-anchor="middle"><tspan class="acc-lbl">TOTAL</tspan><tspan dx="6">৳ 600</tspan></text>
+                <text class="acc-amt acc-amt--3" x="118" y="131.6" text-anchor="middle"><tspan class="acc-lbl">TOTAL</tspan><tspan dx="6">৳ 1,600</tspan></text>
+              </g>
+              <g class="acc-book">
+                <rect class="acc-paper" x="208" y="14" width="92" height="122" rx="5" filter="url(#shSoft)"/>
+                <text class="acc-title" x="217" y="30">CASH BOOK</text>
+                <text class="acc-sub" x="217" y="37.5">Daily ledger</text>
+                <path class="acc-rule" d="M217 44h74"/>
+                <g class="acc-tick" style="--d:.42s"><circle cx="221" cy="55" r="4"/><path d="M219.1 55.1l1.3 1.3 2.6-2.8"/></g>
+                <rect class="acc-bar" x="229" y="53.2" width="26" height="3.6" rx="1.8"/>
+                <text class="acc-val" x="291" y="57.2" text-anchor="end">৳ 100</text>
+                <g class="acc-tick" style="--d:.72s"><circle cx="221" cy="69" r="4"/><path d="M219.1 69.1l1.3 1.3 2.6-2.8"/></g>
+                <rect class="acc-bar" x="229" y="67.2" width="20" height="3.6" rx="1.8"/>
+                <text class="acc-val" x="291" y="71.2" text-anchor="end">৳ 500</text>
+                <g class="acc-tick" style="--d:1.02s"><circle cx="221" cy="83" r="4"/><path d="M219.1 83.1l1.3 1.3 2.6-2.8"/></g>
+                <rect class="acc-bar" x="229" y="81.2" width="30" height="3.6" rx="1.8"/>
+                <text class="acc-val" x="291" y="85.2" text-anchor="end">৳ 1,000</text>
+                <path class="acc-rule acc-rule--sum" d="M217 94h74"/>
+                <text class="acc-sum-lbl" x="217" y="106">TOTAL</text>
+                <text class="acc-sum" x="291" y="106.4" text-anchor="end">৳ 1,600</text>
+                <g class="acc-pen" transform="rotate(-24 262 122)">
+                  <rect class="acc-pen-body" x="234" y="119.3" width="54" height="5.4" rx="2.7"/>
+                  <rect class="acc-pen-band" x="242" y="119.3" width="3.4" height="5.4"/>
+                  <path class="acc-pen-nib" d="M288 119.3l7.4 2.7-7.4 2.7z"/>
+                </g>
+              </g>
+            </svg>
+            <i class="dept__turn" aria-hidden="true"></i>
+          </div>
+          <div class="dept__body">
+            <span class="dept__icon"><svg class="ic-coin" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><circle cx="12" cy="12" r="6.6" stroke-dasharray="1.4 1.9" opacity=".5"/><text x="12" y="16.2" text-anchor="middle">&#x9F3;</text></svg></span>
+            <div class="dept__text">
+              <h3 class="dept__name">Accounts Department</h3>
+              <p class="dept__desc">Vouchers &amp; ledgers</p>
+            </div>
+          </div>
         </li>
 
+        <!-- 2 · Marketing: a social post gathers likes, comments, shares and reach -->
         <li class="dept" style="--i:1">
-          <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.2v3.6a1 1 0 0 0 1 1h2.2l7.3 4.2V5L6.2 9.2H4a1 1 0 0 0-1 1Z"/><path d="M6.2 14.8 7.6 20h2.2l-1.2-4.5"/><path class="ic-wave" d="M16.6 9.4a3.6 3.6 0 0 1 0 5.2"/><path class="ic-wave" d="M19.2 6.8a7.3 7.3 0 0 1 0 10.4"/></svg></span>
-          <h3 class="dept__name">Marketing Department</h3>
-          <p class="dept__desc">Buyers &amp; orders</p>
+          <div class="dept__stage">
+            <svg class="scene" viewBox="0 0 320 150" aria-hidden="true" focusable="false">
+              <rect class="mkt-body" x="120" y="6" width="80" height="140" rx="14" filter="url(#shSoft)"/>
+              <rect class="mkt-notch" x="150" y="11.2" width="20" height="3.6" rx="1.8"/>
+              <image href="assets/images/mega-logo-badge.webp" x="127" y="19" width="11" height="11"/>
+              <text class="mkt-name" x="141" y="24.2">Mega Packaging</text>
+              <text class="mkt-meta" x="141" y="29.6">Sponsored · 2h</text>
+              <rect class="mkt-media" x="127" y="34" width="66" height="44" rx="5"/>
+              <g transform="translate(160 57) scale(.62) translate(-201 -96)">
+                <path class="bx-top" d="M180 85l12-8h30l-12 8z"/>
+                <path class="bx-side" d="M210 85l12-8v30l-12 8z"/>
+                <rect class="bx-front" x="180" y="85" width="30" height="30"/>
+                <path class="bx-tape" d="M192 85l12-8h6l-12 8z"/>
+                <image href="assets/images/mega-logo-badge.webp" x="187" y="92" width="16" height="16"/>
+              </g>
+              <g transform="translate(-31 -54.5)">
+                <path class="mkt-like" d="M163 145c-3.6-2.5-5-4.3-5-6.1a2.4 2.4 0 0 1 5-1 2.4 2.4 0 0 1 5 1c0 1.8-1.4 3.6-5 6.1z"/>
+                <path class="mkt-ico" d="M177.6 143.6a4.4 4.4 0 1 0-1.6-1.5l-.6 2.6z"/>
+                <path class="mkt-ico" d="M188 142.5l9-5.5-3 9-2-3.4z"/>
+              </g>
+              <text class="mkt-likes" x="127" y="99.5">2,431 likes</text>
+              <rect class="mkt-cap" x="127" y="103" width="50" height="2.6" rx="1.3"/>
+              <rect class="mkt-cap" x="127" y="108" width="38" height="2.6" rx="1.3"/>
+              <text class="mkt-meta" x="127" y="118.5">Reach this week</text>
+              <g class="mkt-bars">
+                <rect x="128" y="135" width="6.6" height="5" rx="1.4" style="--d:.25s"/>
+                <rect x="137.4" y="132" width="6.6" height="8" rx="1.4" style="--d:.31s"/>
+                <rect x="146.8" y="133" width="6.6" height="7" rx="1.4" style="--d:.37s"/>
+                <rect x="156.2" y="129" width="6.6" height="11" rx="1.4" style="--d:.43s"/>
+                <rect x="165.6" y="126" width="6.6" height="14" rx="1.4" style="--d:.49s"/>
+                <rect x="175" y="122" width="6.6" height="18" rx="1.4" style="--d:.55s"/>
+                <rect x="184.4" y="118" width="6.6" height="22" rx="1.4" style="--d:.61s"/>
+              </g>
+              <path class="mkt-float" style="--d:.32s; --fx:-7px" d="M132 87c-2-1.4-2.8-2.4-2.8-3.4a1.4 1.4 0 0 1 2.8-.6 1.4 1.4 0 0 1 2.8.6c0 1-.8 2-2.8 3.4z"/>
+              <path class="mkt-float" style="--d:.44s; --fx:6px" d="M132 87c-2-1.4-2.8-2.4-2.8-3.4a1.4 1.4 0 0 1 2.8-.6 1.4 1.4 0 0 1 2.8.6c0 1-.8 2-2.8 3.4z"/>
+              <path class="mkt-float" style="--d:.56s; --fx:-2px" d="M132 87c-2-1.4-2.8-2.4-2.8-3.4a1.4 1.4 0 0 1 2.8-.6 1.4 1.4 0 0 1 2.8.6c0 1-.8 2-2.8 3.4z"/>
+              <g class="mkt-pop" style="--d:1.1s"><circle class="mkt-badge" cx="197" cy="9" r="6.2"/><text class="mkt-badge-txt" x="197" y="10.9" text-anchor="middle">9+</text></g>
+
+              <g class="mkt-pop" style="--d:.45s">
+                <circle class="mkt-royal" cx="82" cy="40" r="12"/>
+                <g transform="translate(75.3 33.3) scale(.56)"><path class="mkt-white-line" d="M7 10v12M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></g>
+              </g>
+              <g class="mkt-pop" style="--d:.84s" filter="url(#shTiny)">
+                <rect class="mkt-tag" x="34" y="88" width="62" height="18" rx="9"/>
+                <path class="mkt-tag-ico" d="M42 99.5l7.6-4.6-2.5 7.6-1.7-2.9z"/>
+                <text class="mkt-tag-txt" x="54" y="99.6">96 shares</text>
+              </g>
+              <g class="mkt-pop" style="--d:.55s">
+                <circle class="mkt-rose" cx="236" cy="28" r="12"/>
+                <path class="mkt-white" d="M236 33c-4-2.8-5.6-4.8-5.6-6.9a2.7 2.7 0 0 1 5.6-1.1 2.7 2.7 0 0 1 5.6 1.1c0 2.1-1.6 4.1-5.6 6.9z"/>
+              </g>
+              <g class="mkt-pop" style="--d:.62s" filter="url(#shTiny)">
+                <rect class="mkt-tag" x="253" y="20" width="36" height="16" rx="8"/>
+                <text class="mkt-tag-txt" x="271" y="30.4" text-anchor="middle">2.4K</text>
+              </g>
+              <g class="mkt-pop" style="--d:.72s" filter="url(#shTiny)">
+                <rect class="mkt-tag" x="214" y="56" width="76" height="18" rx="9"/>
+                <path class="mkt-tag-ico" d="M225.4 68.6a3.9 3.9 0 1 0-1.4-1.3l-.5 2.3z"/>
+                <text class="mkt-tag-txt" x="233" y="67.6">318 comments</text>
+              </g>
+              <g class="mkt-pop" style="--d:.96s" filter="url(#shTiny)">
+                <rect class="mkt-tag" x="214" y="92" width="82" height="18" rx="9"/>
+                <path class="mkt-up" d="M224 105v-7m-2.8 2.8L224 98l2.8 2.8"/>
+                <text class="mkt-tag-txt" x="233" y="103.6">+120 followers</text>
+              </g>
+            </svg>
+            <i class="dept__turn" aria-hidden="true"></i>
+          </div>
+          <div class="dept__body">
+            <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.2v3.6a1 1 0 0 0 1 1h2.2l7.3 4.2V5L6.2 9.2H4a1 1 0 0 0-1 1Z"/><path d="M6.2 14.8 7.6 20h2.2l-1.2-4.5"/><path class="ic-wave" d="M16.6 9.4a3.6 3.6 0 0 1 0 5.2"/><path class="ic-wave" d="M19.2 6.8a7.3 7.3 0 0 1 0 10.4"/></svg></span>
+            <div class="dept__text">
+              <h3 class="dept__name">Marketing Department</h3>
+              <p class="dept__desc">Buyers &amp; orders</p>
+            </div>
+          </div>
         </li>
 
+        <!-- 3 · Commercial: dollars arrive, the Letter of Credit fills in, is signed and stamped -->
         <li class="dept" style="--i:2">
-          <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"/><path d="M14 3l5 5v4"/><path d="M14 3v5h5"/><path d="M8.5 10.5h4M8.5 14h6M8.5 17.5h2.5"/><g class="ic-seal"><circle cx="17.4" cy="17.6" r="3.9"/><path d="m15.8 17.7 1.1 1.1 2.1-2.2"/></g></svg></span>
-          <h3 class="dept__name">Commercial Department</h3>
-          <p class="dept__desc">LC &amp; documents</p>
+          <div class="dept__stage">
+            <svg class="scene" viewBox="0 0 320 150" aria-hidden="true" focusable="false">
+              <g class="com-usd" style="--d:0s">
+                <g transform="translate(24 68) rotate(-7 37.5 16.4) scale(.78)" filter="url(#shTiny)">
+                  <rect class="usd-body" width="96" height="42" rx="3"/>
+                  <rect class="usd-frame" x="3.5" y="3.5" width="89" height="35" rx="2"/>
+                  <circle class="usd-seal" cx="48" cy="22" r="11"/>
+                  <text class="usd-sym" x="48" y="27.4" text-anchor="middle">$</text>
+                  <text class="usd-txt" x="48" y="9.4" text-anchor="middle">UNITED STATES OF AMERICA</text>
+                  <text class="usd-den" x="8" y="35.4">100</text>
+                  <text class="usd-den" x="88" y="35.4" text-anchor="end">100</text>
+                </g>
+              </g>
+              <g class="com-usd" style="--d:.1s">
+                <g transform="translate(40 92) rotate(5 37.5 16.4) scale(.78)" filter="url(#shTiny)">
+                  <rect class="usd-body" width="96" height="42" rx="3"/>
+                  <rect class="usd-frame" x="3.5" y="3.5" width="89" height="35" rx="2"/>
+                  <circle class="usd-seal" cx="48" cy="22" r="11"/>
+                  <text class="usd-sym" x="48" y="27.4" text-anchor="middle">$</text>
+                  <text class="usd-txt" x="48" y="9.4" text-anchor="middle">UNITED STATES OF AMERICA</text>
+                  <text class="usd-den" x="8" y="35.4">100</text>
+                  <text class="usd-den" x="88" y="35.4" text-anchor="end">100</text>
+                </g>
+              </g>
+              <g class="com-coin">
+                <circle class="usd-coin-face" cx="64" cy="38" r="12"/>
+                <circle class="usd-coin-rim" cx="64" cy="38" r="9"/>
+                <text class="usd-coin-sym" x="64" y="42.2" text-anchor="middle">$</text>
+              </g>
+
+              <rect class="lc-paper" x="150" y="7" width="116" height="136" rx="5" filter="url(#shSoft)"/>
+              <circle class="lc-emblem" cx="162" cy="20" r="7"/>
+              <path class="lc-emblem-ico" transform="translate(162 20) scale(.7) translate(-168 -36)" d="M162 33.5l6-4 6 4zM163.8 35v5.6M168 35v5.6M172.2 35v5.6M162.5 41.8h11"/>
+              <text class="lc-title" x="173" y="19.2">LETTER OF CREDIT</text>
+              <text class="lc-sub" x="173" y="25.4">Irrevocable · At sight</text>
+              <path class="lc-rule" d="M156 31h104"/>
+              <g class="com-row" style="--d:.2s"><text class="lc-lbl" x="156" y="41">LC NO.</text><text class="lc-val" x="194" y="41">MPBL/EXP/0425</text></g>
+              <g class="com-row" style="--d:.3s"><text class="lc-lbl" x="156" y="51">BENEFICIARY</text><text class="lc-val" x="194" y="51">Mega Packaging BD Ltd</text></g>
+              <g class="com-row" style="--d:.4s"><text class="lc-lbl" x="156" y="61">ISSUING BANK</text><rect class="lc-bar" x="194" y="57.6" width="44" height="3.6" rx="1.8"/></g>
+              <g class="com-row com-amount" style="--d:.5s">
+                <rect x="156" y="67" width="104" height="22" rx="3.5"/>
+                <text class="lc-lbl" x="161" y="74.6">AMOUNT</text>
+                <text class="com-amount-val" x="161" y="84.8">USD 125,000.00</text>
+              </g>
+              <g class="com-row" style="--d:.62s"><text class="lc-lbl" x="156" y="99">PORT</text><text class="lc-val" x="194" y="99">Chattogram, BD</text></g>
+              <path class="lc-sigline" d="M204 126h54"/>
+              <text class="lc-sub" x="204" y="132.6">Authorised signatory</text>
+              <g transform="translate(-12 -84)">
+                <path class="com-sign com-sign--name" pathLength="1" d="M217 206c2-6 5-13 8-15 3-2 3 4 1 9-1 3-3 6-3 7 1-3 5-11 8-12 2 0 1 6 0 9 1-3 3-6 5-6s1 5 2 6c1 1 3-3 5-5 2-1 2 3 3 4 2 1 4-4 6-5 2-1 1 4 3 4 2 0 4-3 6-4"/>
+                <path class="com-sign com-sign--line" pathLength="1" d="M221 210c12 1 32 0 55-5"/>
+              </g>
+              <g class="com-stamp">
+                <g transform="translate(157 104) scale(.88) translate(-156 -189)">
+                  <rect x="156" y="189" width="54" height="27" rx="3"/>
+                  <rect class="lc-stamp-in" x="158.5" y="191.5" width="49" height="22" rx="2"/>
+                  <text x="183" y="203.4" text-anchor="middle">APPROVED</text>
+                  <text class="lc-stamp-by" x="183" y="210.2" text-anchor="middle">BY THE BANK</text>
+                </g>
+              </g>
+            </svg>
+            <i class="dept__turn" aria-hidden="true"></i>
+          </div>
+          <div class="dept__body">
+            <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5"/><path d="M14 3l5 5v4"/><path d="M14 3v5h5"/><path d="M8.5 10.5h4M8.5 14h6M8.5 17.5h2.5"/><g class="ic-seal"><circle cx="17.4" cy="17.6" r="3.9"/><path d="m15.8 17.7 1.1 1.1 2.1-2.2"/></g></svg></span>
+            <div class="dept__text">
+              <h3 class="dept__name">Commercial Department</h3>
+              <p class="dept__desc">LC &amp; documents</p>
+            </div>
+          </div>
         </li>
 
+        <!-- 4 · Production: the line moves on, the press prints the Mega logo on each carton -->
         <li class="dept" style="--i:3">
-          <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="ic-gear-big" d="M9.80 9.75L10.82 8.39L12.13 9.02L11.69 10.67L12.88 12.01L14.57 11.78L15.04 13.15L13.56 14.00L13.45 15.80L14.81 16.82L14.18 18.13L12.53 17.69L11.19 18.88L11.42 20.57L10.05 21.04L9.20 19.56L7.40 19.45L6.38 20.81L5.07 20.18L5.51 18.53L4.32 17.19L2.63 17.42L2.16 16.05L3.64 15.20L3.75 13.40L2.39 12.38L3.02 11.07L4.67 11.51L6.01 10.32L5.78 8.63L7.15 8.16L8.00 9.64ZM10.60 14.60a2 2 0 1 0 -4 0a2 2 0 1 0 4 0"/><path class="ic-gear-small" d="M14.35 10.66L13.24 11.33L12.41 10.39L13.21 9.36L12.91 7.92L11.78 7.29L12.18 6.09L13.46 6.28L14.57 5.30L14.55 4.00L15.78 3.75L16.26 4.95L17.67 5.42L18.78 4.75L19.61 5.69L18.81 6.72L19.11 8.16L20.24 8.79L19.84 9.99L18.56 9.80L17.45 10.78L17.47 12.08L16.24 12.33L15.76 11.13ZM17.21 8.04a1.2 1.2 0 1 0 -2.4 0a1.2 1.2 0 1 0 2.4 0"/></svg></span>
-          <h3 class="dept__name">Production Department</h3>
-          <p class="dept__desc">Corrugation &amp; print</p>
+          <div class="dept__stage">
+            <svg class="scene" viewBox="0 0 320 150" aria-hidden="true" focusable="false">
+              <g class="prd-status" filter="url(#shTiny)">
+                <rect class="sc-pill" x="8" y="8" width="86" height="18" rx="9"/>
+                <circle class="prd-led" cx="19" cy="17" r="3"/>
+                <text class="prd-stat" x="26" y="19.1">LINE 1 · RUNNING</text>
+              </g>
+              <g transform="translate(14 24) scale(2.2)">
+                <path class="prd-gear prd-gear--big" d="M9.80 9.75L10.82 8.39L12.13 9.02L11.69 10.67L12.88 12.01L14.57 11.78L15.04 13.15L13.56 14.00L13.45 15.80L14.81 16.82L14.18 18.13L12.53 17.69L11.19 18.88L11.42 20.57L10.05 21.04L9.20 19.56L7.40 19.45L6.38 20.81L5.07 20.18L5.51 18.53L4.32 17.19L2.63 17.42L2.16 16.05L3.64 15.20L3.75 13.40L2.39 12.38L3.02 11.07L4.67 11.51L6.01 10.32L5.78 8.63L7.15 8.16L8.00 9.64ZM10.60 14.60a2 2 0 1 0 -4 0a2 2 0 1 0 4 0"/>
+                <path class="prd-gear prd-gear--small" d="M14.35 10.66L13.24 11.33L12.41 10.39L13.21 9.36L12.91 7.92L11.78 7.29L12.18 6.09L13.46 6.28L14.57 5.30L14.55 4.00L15.78 3.75L16.26 4.95L17.67 5.42L18.78 4.75L19.61 5.69L18.81 6.72L19.11 8.16L20.24 8.79L19.84 9.99L18.56 9.80L17.45 10.78L17.47 12.08L16.24 12.33L15.76 11.13ZM17.21 8.04a1.2 1.2 0 1 0 -2.4 0a1.2 1.2 0 1 0 2.4 0"/>
+              </g>
+              <path class="prd-web" d="M262 56C236 74 200 70 184 50"/>
+              <circle class="prd-reel" cx="276" cy="44" r="17"/>
+              <circle class="prd-reel-ring" cx="276" cy="44" r="11.5"/>
+              <path class="prd-reel-spokes" d="M276 36.5v15M268.5 44h15"/>
+              <circle class="prd-reel-hub" cx="276" cy="44" r="3.4"/>
+
+              <!-- the head and its rod sit behind the machine's body, so the rod reaches out of it -->
+              <g class="prd-head">
+                <rect class="prd-rod" x="155" y="44" width="6" height="22"/>
+                <rect class="prd-plate" x="145" y="65" width="26" height="5" rx="1.5"/>
+              </g>
+              <rect class="prd-hood" x="139" y="6" width="38" height="6" rx="3"/>
+              <rect class="prd-body" x="133" y="11" width="50" height="46" rx="6"/>
+              <rect class="prd-panel" x="139" y="17" width="38" height="17" rx="3"/>
+              <image href="assets/images/mega-logo-badge.webp" x="142" y="19.5" width="12" height="12"/>
+              <text class="prd-ptext" x="157" y="24.8">PRINT</text>
+              <rect class="prd-meter-bg" x="157" y="28" width="17" height="2.4" rx="1.2"/>
+              <rect class="prd-meter" x="157" y="28" width="17" height="2.4" rx="1.2"/>
+              <circle class="prd-light prd-light--go" cx="143" cy="41" r="2.2"/>
+              <circle class="prd-light prd-light--wait" cx="150" cy="41" r="2.2"/>
+              <path class="prd-vent" d="M139 47.5h38M139 51.5h38"/>
+
+              <path class="prd-floor" d="M4 146h312"/>
+              <rect class="prd-leg" x="34" y="121" width="4" height="25"/>
+              <rect class="prd-leg" x="282" y="121" width="4" height="25"/>
+              <rect class="prd-belt" x="6" y="112" width="308" height="9" rx="4.5"/>
+              <path class="prd-belt-run" d="M10 113.4H310"/>
+              <g class="prd-rollers">
+                <circle cx="16" cy="116.6" r="3"/><circle cx="48" cy="116.6" r="3"/><circle cx="80" cy="116.6" r="3"/><circle cx="112" cy="116.6" r="3"/><circle cx="144" cy="116.6" r="3"/>
+                <circle cx="176" cy="116.6" r="3"/><circle cx="208" cy="116.6" r="3"/><circle cx="240" cy="116.6" r="3"/><circle cx="272" cy="116.6" r="3"/><circle cx="304" cy="116.6" r="3"/>
+              </g>
+              <g class="prd-spokes">
+                <path d="M14 116.6h4"/><path d="M46 116.6h4"/><path d="M78 116.6h4"/><path d="M110 116.6h4"/><path d="M142 116.6h4"/>
+                <path d="M174 116.6h4"/><path d="M206 116.6h4"/><path d="M238 116.6h4"/><path d="M270 116.6h4"/><path d="M302 116.6h4"/>
+              </g>
+
+              <!-- six cartons, one pitch (76) apart; the press stands over the fourth -->
+              <g class="prd-line">
+                <g transform="translate(-68 0)"><path class="bx-top" d="M-16 88l7-5h28l-7 5z"/><path class="bx-side" d="M12 88l7-5v24l-7 5z"/><rect class="bx-front" x="-16" y="88" width="28" height="24"/><path class="bx-tape" d="M-4 88l7-5h4l-7 5z"/></g>
+                <g transform="translate(8 0)"><path class="bx-top" d="M-16 88l7-5h28l-7 5z"/><path class="bx-side" d="M12 88l7-5v24l-7 5z"/><rect class="bx-front" x="-16" y="88" width="28" height="24"/><path class="bx-tape" d="M-4 88l7-5h4l-7 5z"/></g>
+                <g transform="translate(84 0)"><path class="bx-top" d="M-16 88l7-5h28l-7 5z"/><path class="bx-side" d="M12 88l7-5v24l-7 5z"/><rect class="bx-front" x="-16" y="88" width="28" height="24"/><path class="bx-tape" d="M-4 88l7-5h4l-7 5z"/><image class="prd-print" href="assets/images/mega-logo-badge.webp" x="-10.5" y="91.5" width="17" height="17"/></g>
+                <g transform="translate(160 0)"><path class="bx-top" d="M-16 88l7-5h28l-7 5z"/><path class="bx-side" d="M12 88l7-5v24l-7 5z"/><rect class="bx-front" x="-16" y="88" width="28" height="24"/><path class="bx-tape" d="M-4 88l7-5h4l-7 5z"/><image href="assets/images/mega-logo-badge.webp" x="-10.5" y="91.5" width="17" height="17"/></g>
+                <g transform="translate(236 0)"><path class="bx-top" d="M-16 88l7-5h28l-7 5z"/><path class="bx-side" d="M12 88l7-5v24l-7 5z"/><rect class="bx-front" x="-16" y="88" width="28" height="24"/><path class="bx-tape" d="M-4 88l7-5h4l-7 5z"/><image href="assets/images/mega-logo-badge.webp" x="-10.5" y="91.5" width="17" height="17"/></g>
+                <g transform="translate(312 0)"><path class="bx-top" d="M-16 88l7-5h28l-7 5z"/><path class="bx-side" d="M12 88l7-5v24l-7 5z"/><rect class="bx-front" x="-16" y="88" width="28" height="24"/><path class="bx-tape" d="M-4 88l7-5h4l-7 5z"/><image href="assets/images/mega-logo-badge.webp" x="-10.5" y="91.5" width="17" height="17"/></g>
+              </g>
+            </svg>
+            <i class="dept__turn" aria-hidden="true"></i>
+          </div>
+          <div class="dept__body">
+            <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="ic-gear-big" d="M9.80 9.75L10.82 8.39L12.13 9.02L11.69 10.67L12.88 12.01L14.57 11.78L15.04 13.15L13.56 14.00L13.45 15.80L14.81 16.82L14.18 18.13L12.53 17.69L11.19 18.88L11.42 20.57L10.05 21.04L9.20 19.56L7.40 19.45L6.38 20.81L5.07 20.18L5.51 18.53L4.32 17.19L2.63 17.42L2.16 16.05L3.64 15.20L3.75 13.40L2.39 12.38L3.02 11.07L4.67 11.51L6.01 10.32L5.78 8.63L7.15 8.16L8.00 9.64ZM10.60 14.60a2 2 0 1 0 -4 0a2 2 0 1 0 4 0"/><path class="ic-gear-small" d="M14.35 10.66L13.24 11.33L12.41 10.39L13.21 9.36L12.91 7.92L11.78 7.29L12.18 6.09L13.46 6.28L14.57 5.30L14.55 4.00L15.78 3.75L16.26 4.95L17.67 5.42L18.78 4.75L19.61 5.69L18.81 6.72L19.11 8.16L20.24 8.79L19.84 9.99L18.56 9.80L17.45 10.78L17.47 12.08L16.24 12.33L15.76 11.13ZM17.21 8.04a1.2 1.2 0 1 0 -2.4 0a1.2 1.2 0 1 0 2.4 0"/></svg></span>
+            <div class="dept__text">
+              <h3 class="dept__name">Production Department</h3>
+              <p class="dept__desc">Corrugation &amp; print</p>
+            </div>
+          </div>
         </li>
 
+        <!-- 5 · Store: a carton is shelved and scanned into stock -->
         <li class="dept" style="--i:4">
-          <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="ic-box"><rect x="2.5" y="13" width="9" height="8" rx="1"/><path d="M7 13v3"/></g><g class="ic-box"><rect x="12.5" y="13" width="9" height="8" rx="1"/><path d="M17 13v3"/></g><g class="ic-box"><rect x="7.5" y="4" width="9" height="8" rx="1"/><path d="M12 4v3"/></g></svg></span>
-          <h3 class="dept__name">Store Department</h3>
-          <p class="dept__desc">Materials &amp; stock</p>
+          <div class="dept__stage">
+            <svg class="scene" viewBox="0 0 320 150" aria-hidden="true" focusable="false">
+              <path class="sto-floor" d="M6 142h308"/>
+              <rect class="sto-post" x="26" y="10" width="5" height="132" rx="2"/>
+              <rect class="sto-post" x="196" y="10" width="5" height="132" rx="2"/>
+              <rect class="sto-shelf" x="22" y="66" width="183" height="5" rx="2"/>
+              <rect class="sto-shelf" x="22" y="134" width="183" height="5" rx="2"/>
+              <g transform="translate(40 34)"><rect class="sto-front" width="44" height="32" rx="2"/><path class="sto-flap" d="M0 2a2 2 0 0 1 2-2h40a2 2 0 0 1 2 2v5H0z"/><rect class="sto-tape" x="18.5" width="7" height="11"/><rect class="sto-label" x="25" y="18" width="15" height="10" rx="1"/><path class="sto-code" transform="translate(26.8 20.6)" d="M0 0v5M1.1 0v5M3 0v5M5.6 0v5M6.7 0v5M8.6 0v5M9.7 0v5M10.8 0v5"/></g>
+              <g transform="translate(92 34)"><rect class="sto-front" width="44" height="32" rx="2"/><path class="sto-flap" d="M0 2a2 2 0 0 1 2-2h40a2 2 0 0 1 2 2v5H0z"/><rect class="sto-tape" x="18.5" width="7" height="11"/><rect class="sto-label" x="25" y="18" width="15" height="10" rx="1"/><path class="sto-code" transform="translate(26.8 20.6)" d="M0 0v5M1.1 0v5M3 0v5M5.6 0v5M6.7 0v5M8.6 0v5M9.7 0v5M10.8 0v5"/></g>
+              <g transform="translate(40 102)"><rect class="sto-front" width="44" height="32" rx="2"/><path class="sto-flap" d="M0 2a2 2 0 0 1 2-2h40a2 2 0 0 1 2 2v5H0z"/><rect class="sto-tape" x="18.5" width="7" height="11"/><rect class="sto-label" x="25" y="18" width="15" height="10" rx="1"/><path class="sto-code" transform="translate(26.8 20.6)" d="M0 0v5M1.1 0v5M3 0v5M5.6 0v5M6.7 0v5M8.6 0v5M9.7 0v5M10.8 0v5"/></g>
+              <g transform="translate(92 102)"><rect class="sto-front" width="44" height="32" rx="2"/><path class="sto-flap" d="M0 2a2 2 0 0 1 2-2h40a2 2 0 0 1 2 2v5H0z"/><rect class="sto-tape" x="18.5" width="7" height="11"/><rect class="sto-label" x="25" y="18" width="15" height="10" rx="1"/><path class="sto-code" transform="translate(26.8 20.6)" d="M0 0v5M1.1 0v5M3 0v5M5.6 0v5M6.7 0v5M8.6 0v5M9.7 0v5M10.8 0v5"/></g>
+              <g transform="translate(144 102)"><rect class="sto-front" width="44" height="32" rx="2"/><path class="sto-flap" d="M0 2a2 2 0 0 1 2-2h40a2 2 0 0 1 2 2v5H0z"/><rect class="sto-tape" x="18.5" width="7" height="11"/><rect class="sto-label" x="25" y="18" width="15" height="10" rx="1"/><path class="sto-code" transform="translate(26.8 20.6)" d="M0 0v5M1.1 0v5M3 0v5M5.6 0v5M6.7 0v5M8.6 0v5M9.7 0v5M10.8 0v5"/></g>
+              <!-- the carton that arrives, and is scanned -->
+              <g class="sto-new">
+                <g transform="translate(144 34)"><rect class="sto-front" width="44" height="32" rx="2"/><path class="sto-flap" d="M0 2a2 2 0 0 1 2-2h40a2 2 0 0 1 2 2v5H0z"/><rect class="sto-tape" x="18.5" width="7" height="11"/><rect class="sto-label sto-label--new" x="25" y="18" width="15" height="10" rx="1"/><path class="sto-code" transform="translate(26.8 20.6)" d="M0 0v5M1.1 0v5M3 0v5M5.6 0v5M6.7 0v5M8.6 0v5M9.7 0v5M10.8 0v5"/></g>
+              </g>
+              <g class="sto-scanner">
+                <path class="sto-beam" d="M238 50.5L186 52.6V61.4L238 56.5Z"/>
+                <path class="sto-laser" d="M168 57h17"/>
+                <path class="sto-gun" transform="translate(-78 -96)" d="M316 146a6 6 0 0 1 6-6h26a6 6 0 0 1 6 6v8a6 6 0 0 1-6 6h-5l-3 32a3 3 0 0 1-3 2.7h-4a3 3 0 0 1-3-3.2l2.4-31.5H322a6 6 0 0 1-6-6z"/>
+                <path class="sto-window" d="M238.5 50v8"/>
+              </g>
+              <g class="sto-done" filter="url(#shTiny)">
+                <rect class="sc-pill" x="218" y="8" width="94" height="20" rx="10"/>
+                <circle class="sto-ok" cx="229" cy="18" r="6"/>
+                <path class="sto-ok-tick" d="M226.3 18.2l1.9 1.9 3.6-3.9"/>
+                <text class="sto-done-txt" x="239" y="20.5">Stock +6 cartons</text>
+              </g>
+            </svg>
+            <i class="dept__turn" aria-hidden="true"></i>
+          </div>
+          <div class="dept__body">
+            <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="ic-box"><rect x="2.5" y="13" width="9" height="8" rx="1"/><path d="M7 13v3"/></g><g class="ic-box"><rect x="12.5" y="13" width="9" height="8" rx="1"/><path d="M17 13v3"/></g><g class="ic-box"><rect x="7.5" y="4" width="9" height="8" rx="1"/><path d="M12 4v3"/></g></svg></span>
+            <div class="dept__text">
+              <h3 class="dept__name">Store Department</h3>
+              <p class="dept__desc">Materials &amp; stock</p>
+            </div>
+          </div>
         </li>
 
+        <!-- 6 · HRM: an employee card, a fingerprint check-in, the team present, payroll ready -->
         <li class="dept" style="--i:5">
-          <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="ic-person ic-person--back"><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g><g class="ic-person"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg></span>
-          <h3 class="dept__name">HRM Department</h3>
-          <p class="dept__desc">People &amp; payroll</p>
+          <div class="dept__stage">
+            <svg class="scene" viewBox="0 0 320 150" aria-hidden="true" focusable="false">
+              <g class="hrm-card">
+                <rect class="hrm-strap" x="69.5" y="0" width="7" height="14" rx="1.5"/>
+                <rect class="hrm-clip" x="65.5" y="10.5" width="15" height="7" rx="2"/>
+                <rect class="hrm-card-body" x="40" y="16" width="66" height="124" rx="8" filter="url(#shSoft)"/>
+                <path class="hrm-band" d="M40 24a8 8 0 0 1 8-8h50a8 8 0 0 1 8 8v12H40z"/>
+                <image href="assets/images/mega-logo-badge.webp" x="45" y="20" width="12" height="12"/>
+                <text class="hrm-org" x="60" y="26.6">MEGA PACKAGING</text>
+                <text class="hrm-org hrm-org--sub" x="60" y="31.6">STAFF ID CARD</text>
+                <circle class="hrm-photo" cx="73" cy="58" r="14"/>
+                <circle class="hrm-avatar" cx="73" cy="54.4" r="5.2"/>
+                <path class="hrm-avatar" d="M63.6 68a9.4 9.4 0 0 1 18.8 0z"/>
+                <text class="hrm-id" x="73" y="86" text-anchor="middle">ID: MP-1024</text>
+                <rect class="hrm-line" x="55" y="91" width="36" height="3" rx="1.5"/>
+                <rect class="hrm-line" x="61" y="97" width="24" height="3" rx="1.5"/>
+                <path class="hrm-barcode" transform="translate(50 106) scale(.78 .73) translate(-116 -172)" d="M116.0 172v15M117.3 172v15M119.5 172v15M120.8 172v15M122.1 172v15M125.2 172v15M127.4 172v15M129.6 172v15M131.8 172v15M134.0 172v15M135.3 172v15M136.6 172v15M139.7 172v15M141.0 172v15M143.2 172v15M145.4 172v15M148.5 172v15M150.7 172v15M152.0 172v15M153.3 172v15M156.4 172v15M158.6 172v15M160.8 172v15M163.0 172v15M164.3 172v15M165.6 172v15M168.7 172v15M170.0 172v15M171.3 172v15M173.5 172v15"/>
+              </g>
+
+              <rect class="hrm-dev" x="128" y="22" width="60" height="104" rx="10" filter="url(#shSoft)"/>
+              <rect class="hrm-glass" x="136" y="31" width="44" height="48" rx="7"/>
+              <g transform="translate(144.2 41.2) scale(1.15)"><g class="hrm-fp"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></g></g>
+              <g transform="translate(144.2 41.2) scale(1.15)"><g class="hrm-fp hrm-fp--lit"><path pathLength="1" d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path pathLength="1" d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path pathLength="1" d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path pathLength="1" d="M2 12a10 10 0 0 1 18-6"/><path pathLength="1" d="M21.8 16c.2-2 .131-5.354 0-6"/><path pathLength="1" d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path pathLength="1" d="M8.65 22c.21-.66.45-1.32.57-2"/><path pathLength="1" d="M9 6.8a6 6 0 0 1 9 5.2v2"/></g></g>
+              <path class="hrm-scan" d="M140 37h36"/>
+              <text class="hrm-status hrm-status--scan" x="158" y="94" text-anchor="middle">SCANNING…</text>
+              <text class="hrm-status hrm-status--ok" x="158" y="94" text-anchor="middle">PRESENT · 09:00</text>
+              <circle class="hrm-led" cx="158" cy="110" r="3"/>
+              <g class="hrm-ok"><circle cx="186" cy="24" r="8.5"/><path d="M182.2 24.4l2.6 2.6 5-5.4"/></g>
+
+              <text class="hrm-label" x="206" y="40">PRESENT TODAY</text>
+              <g class="hrm-mate" style="--d:1.3s"><circle cx="215.5" cy="58" r="9.5" fill="#6d83b8"/><text x="215.5" y="60.1" text-anchor="middle">AR</text></g>
+              <g class="hrm-mate" style="--d:1.37s"><circle cx="232" cy="58" r="9.5" fill="#3b82c4"/><text x="232" y="60.1" text-anchor="middle">SK</text></g>
+              <g class="hrm-mate" style="--d:1.44s"><circle cx="248.5" cy="58" r="9.5" fill="#7c6fb0"/><text x="248.5" y="60.1" text-anchor="middle">MH</text></g>
+              <g class="hrm-mate" style="--d:1.51s"><circle cx="265" cy="58" r="9.5" fill="#3f9a7a"/><text x="265" y="60.1" text-anchor="middle">NJ</text></g>
+              <g class="hrm-mate" style="--d:1.58s"><circle cx="281.5" cy="58" r="9.5" fill="#c2884a"/><text x="281.5" y="60.1" text-anchor="middle">RT</text></g>
+              <g class="hrm-mate hrm-more" style="--d:1.66s"><rect x="294" y="50" width="22" height="16" rx="8"/><text x="305" y="60.6" text-anchor="middle">+86</text></g>
+              <rect class="hrm-track" x="206" y="78" width="108" height="5" rx="2.5"/>
+              <rect class="hrm-fill" x="206" y="78" width="100" height="5" rx="2.5"/>
+              <text class="hrm-note" x="206" y="93">93% on time</text>
+              <text class="hrm-count" x="314" y="93" text-anchor="end">42 / 45</text>
+              <g class="hrm-pay" filter="url(#shTiny)">
+                <rect class="sc-pill" x="206" y="106" width="82" height="18" rx="9"/>
+                <circle class="hrm-pay-ico" cx="216" cy="115" r="5.4"/>
+                <text class="hrm-pay-tk" x="216" y="117.5" text-anchor="middle">৳</text>
+                <text class="hrm-pay-txt" x="225.5" y="117.2">Payroll ready</text>
+              </g>
+            </svg>
+            <i class="dept__turn" aria-hidden="true"></i>
+          </div>
+          <div class="dept__body">
+            <span class="dept__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="ic-person ic-person--back"><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></g><g class="ic-person"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></g></svg></span>
+            <div class="dept__text">
+              <h3 class="dept__name">HRM Department</h3>
+              <p class="dept__desc">People &amp; payroll</p>
+            </div>
+          </div>
         </li>
       </ul>
     </section>

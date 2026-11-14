@@ -1,6 +1,7 @@
 /* =====================================================================
    Mega Packaging ERP: dashboard
-   The welcome, written out by hand, then the six departments.
+   Who is here and the time, the welcome written out by hand, then the
+   six departments, each shown at work (the scenes are in scenes.css).
    Light and calm, like the sign-in page.
    ===================================================================== */
 
@@ -21,6 +22,7 @@
   --line-strong: #cdd5e2;
   --surface: #ffffff;
   --page: #f5f7fa;
+  --success: #16a34a;
 
   /* the hand-written welcome: navy into the brand blue */
   --pen-1: #12204a;
@@ -32,6 +34,8 @@
   --font-hand: 'Dancing Script', 'Segoe Script', 'Brush Script MT', cursive;
 
   --ease-out: cubic-bezier(.2, .7, .2, 1);
+  --shadow-card: 0 1px 2px rgba(15, 29, 64, .04), 0 8px 24px -18px rgba(15, 29, 64, .25);
+  --shadow-lift: 0 26px 48px -28px rgba(15, 29, 64, .45);
 }
 
 *,
@@ -84,6 +88,14 @@ svg {
   border: 0;
 }
 
+/* the scenes' shared filters live here; it takes no room */
+.svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
 /* ---------------------------------------------------------------------
    The bar along the top: the company, who is signed in, sign out
    --------------------------------------------------------------------- */
@@ -114,6 +126,11 @@ svg {
   height: 40px;
   border-radius: 50%;
   box-shadow: 0 4px 12px -6px rgba(18, 32, 74, .45);
+  transition: transform .6s var(--ease-out);
+}
+
+.topbar__brand:hover img {
+  transform: rotate(-12deg) scale(1.04);
 }
 
 .topbar__brand b {
@@ -141,15 +158,7 @@ svg {
 .topbar__user {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-width: 0;
-}
-
-.user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+  gap: 12px;
 }
 
 .user__avatar {
@@ -164,16 +173,6 @@ svg {
   font: 700 13px/1 var(--font-head);
   letter-spacing: .02em;
   color: var(--brand);
-}
-
-.user__name {
-  max-width: 220px;
-  overflow: hidden;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .signout {
@@ -200,12 +199,17 @@ svg {
   stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
+  transition: transform .25s var(--ease-out);
 }
 
 .signout:hover {
   border-color: var(--brand-line);
   background: var(--brand-soft);
   color: var(--brand);
+}
+
+.signout:hover svg {
+  transform: translateX(2px);
 }
 
 .signout:focus-visible {
@@ -219,31 +223,180 @@ svg {
 }
 
 /* ---------------------------------------------------------------------
-   The welcome, in a hand: each line is uncovered left to right
-   (dashboard.js moves the reveal and the nib), its outline draws
-   itself, then the ink fills in
+   The welcome
    --------------------------------------------------------------------- */
 
 .home {
   flex: 1;
   width: 100%;
-  max-width: 1120px;
+  max-width: 1140px;
   margin: 0 auto;
-  padding: clamp(30px, 6vh, 64px) clamp(16px, 4vw, 32px) 40px;
+  padding: clamp(24px, 4.5vh, 48px) clamp(16px, 4vw, 32px) 40px;
 }
 
 .welcome {
+  display: grid;
+  justify-items: center;
   text-align: center;
 }
 
+/* Who is here, and the time: a ticking dial beside the clock */
+.hello {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 100%;
+  padding: 8px 20px 8px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+}
+
+.is-ready .hello {
+  animation: rise .6s var(--ease-out) .1s backwards;
+}
+
+.hello__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(150deg, var(--brand), var(--navy));
+  font: 700 15px/1 var(--font-head);
+  letter-spacing: .02em;
+  color: #fff;
+}
+
+.hello__who {
+  display: grid;
+  min-width: 0;
+}
+
+.hello__greet {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.hello__name {
+  overflow: hidden;
+  font: 700 15px/1.3 var(--font-head);
+  color: var(--ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hello__sep {
+  flex: none;
+  width: 1px;
+  height: 30px;
+  background: var(--line);
+}
+
+.dial {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  overflow: visible;
+}
+
+.dial__face {
+  fill: var(--surface);
+  stroke: var(--line-strong);
+  stroke-width: 2;
+}
+
+.dial__ticks line {
+  stroke: var(--faint);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.dial__ticks .q {
+  stroke: var(--navy);
+  stroke-width: 3.4;
+}
+
+.dial__hand {
+  stroke-linecap: round;
+  transform-origin: 50px 50px;
+}
+
+/* the hands move only once the clock is set, so they never sweep in from noon */
+.dial.is-set .dial__hand {
+  transition: transform .5s var(--ease-out);
+}
+
+.dial.is-set .dial__hand--s {
+  transition: transform .4s cubic-bezier(.4, 2.1, .5, 1);
+}
+
+.dial__hand--h {
+  stroke: var(--navy);
+  stroke-width: 6;
+}
+
+.dial__hand--m {
+  stroke: var(--navy);
+  stroke-width: 4;
+}
+
+.dial__hand--s {
+  stroke: var(--brand);
+  stroke-width: 2;
+}
+
+.dial__hub {
+  fill: var(--brand);
+  stroke: var(--surface);
+  stroke-width: 1.6;
+}
+
+.clock {
+  display: grid;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock__time {
+  font: 700 16px/1.25 var(--font-head);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.clock__s {
+  color: var(--faint);
+}
+
+.clock__ap {
+  margin-left: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--brand);
+}
+
+.clock__date {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* The greeting in a hand: each line is uncovered left to right (dashboard.js
+   moves the reveal and the nib), its outline draws itself, then the ink fills in */
 .welcome h1 {
-  margin: 0;
+  width: 100%;
+  margin: 14px 0 0;
   line-height: 1;
 }
 
 .ink {
   display: block;
-  width: min(100%, 820px);
+  width: min(100%, 780px);
   height: auto;
   aspect-ratio: 6.3;   /* about right until dashboard.js measures the real thing */
   margin: 0 auto;
@@ -291,7 +444,6 @@ svg {
 .ink-nib {
   fill: var(--pen-2);
   opacity: 0;
-  filter: drop-shadow(0 0 4px rgba(11, 79, 191, .55));
   transition: opacity .2s;
 }
 
@@ -300,86 +452,199 @@ svg {
    --------------------------------------------------------------------- */
 
 .departments {
-  margin-top: clamp(30px, 5vh, 50px);
+  margin-top: clamp(24px, 4vh, 40px);
+}
+
+.departments__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
 .departments__title {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin: 0 0 18px;
+  gap: 10px;
+  margin: 0;
   font: 700 12.5px/1 var(--font-head);
   letter-spacing: .1em;
   text-transform: uppercase;
   color: var(--ink-2);
+  white-space: nowrap;
 }
 
-.departments__title::after {
+.departments__count {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  font-size: 11.5px;
+  letter-spacing: 0;
+  color: var(--brand);
+}
+
+/* a quiet line out to the hint */
+.departments__head::after {
   content: '';
+  order: 1;
   flex: 1;
   height: 1px;
   background: var(--line);
 }
 
+.departments__hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  order: 2;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.departments__hint svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--brand);
+}
+
+.hint-touch {
+  display: none;
+}
+
+@media (hover: none) {
+  .hint-pointer { display: none; }
+  .hint-touch   { display: inline; }
+}
+
 .depts {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 20px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* A department: its scene on a stage, then its name. It leans a little toward the pointer
+   (dashboard.js sets --rx/--ry, and --px/--py for the scene's depth). */
 .dept {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  justify-items: start;
+  position: relative;
   min-width: 0;
-  padding: 24px 24px 22px;
+  overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 20px;
   background: var(--surface);
-  box-shadow: 0 1px 2px rgba(15, 29, 64, .04);
-  transition: transform .3s var(--ease-out), box-shadow .3s, border-color .3s;
+  box-shadow: var(--shadow-card);
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform .25s ease-out, box-shadow .35s, border-color .35s;
 }
 
 .dept:hover {
-  transform: translateY(-4px);
+  --lift: -5px;
+  box-shadow: var(--shadow-lift);
+}
+
+/* its turn (or under the pointer): the department lights up */
+.dept.is-live {
   border-color: var(--brand-line);
-  box-shadow: 0 22px 40px -26px rgba(15, 29, 64, .4);
 }
 
 /* the cards rise into place once the page is shown */
 .is-ready .dept {
   animation: dept-in .7s var(--ease-out) backwards;
-  animation-delay: calc(.35s + var(--i, 0) * .08s);
+  animation-delay: calc(1s + var(--i, 0) * .09s);
 }
 
 @keyframes dept-in {
-  from { opacity: 0; transform: translateY(16px); }
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(18px);
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+.dept__stage {
+  position: relative;
+  height: 158px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #f8fafd 0%, #eef2f8 100%);
+}
+
+.dept__stage .scene {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  transform: translate(var(--px, 0px), var(--py, 0px));
+  transition: transform .35s ease-out;
+}
+
+/* the turn's progress, along the foot of the stage */
+.dept__turn {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.dept.is-playing .dept__turn {
+  animation: turn-run var(--play, 2800ms) linear;
+}
+
+@keyframes turn-run {
+  from { transform: scaleX(0); }
+  92%  { transform: scaleX(1); opacity: 1; }
+  to   { transform: scaleX(1); opacity: 0; }
+}
+
+.dept__body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px 18px;
 }
 
 .dept__icon {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
-  margin-bottom: 18px;
-  border-radius: 15px;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   background: var(--brand-soft);
   color: var(--brand);
   transition: background-color .3s, color .3s, box-shadow .3s;
 }
 
-.dept:hover .dept__icon {
+.dept:hover .dept__icon,
+.dept.is-live .dept__icon {
   background: var(--brand);
   color: #fff;
-  box-shadow: 0 10px 20px -10px rgba(11, 79, 191, .7);
+  box-shadow: 0 10px 18px -10px rgba(11, 79, 191, .75);
 }
 
 .dept__icon svg {
-  width: 29px;
-  height: 29px;
+  width: 23px;
+  height: 23px;
   overflow: visible;
   fill: none;
   stroke: currentColor;
@@ -388,16 +653,20 @@ svg {
   stroke-linejoin: round;
 }
 
+.dept__text {
+  min-width: 0;
+}
+
 .dept__name {
   margin: 0;
-  font: 700 17.5px/1.3 var(--font-head);
+  font: 700 16.5px/1.3 var(--font-head);
   letter-spacing: -.01em;
   color: var(--ink);
 }
 
 .dept__desc {
-  margin: 5px 0 0;
-  font-size: 14px;
+  margin: 2px 0 0;
+  font-size: 13.5px;
   color: var(--muted);
 }
 
@@ -426,18 +695,29 @@ svg {
   transform-origin: center;
 }
 
-/* each icon comes alive under the pointer */
-.dept:hover .ic-coin            { animation: ic-flip .8s var(--ease-out); }
-.dept:hover .ic-wave            { animation: ic-wave 1.2s ease-out infinite; }
-.dept:hover .ic-wave + .ic-wave { animation-delay: .2s; }
-.dept:hover .ic-gear-big        { animation: ic-turn 3s linear infinite; }
-.dept:hover .ic-gear-small      { animation: ic-turn 2.25s linear infinite reverse; }
-.dept:hover .ic-seal            { animation: ic-stamp .45s cubic-bezier(.25, 1.4, .45, 1); }
-.dept:hover .ic-person          { animation: ic-bob 1.2s ease-in-out infinite; }
-.dept:hover .ic-person--back    { animation-delay: .3s; }
-.dept:hover .ic-box             { animation: ic-hop .9s ease-in-out infinite; }
-.dept:hover .ic-box + .ic-box   { animation-delay: .12s; }
-.dept:hover .ic-box + .ic-box + .ic-box { animation-delay: .24s; }
+/* each icon comes alive with its department */
+.dept:hover .ic-coin,
+.dept.is-live .ic-coin            { animation: ic-flip .8s var(--ease-out); }
+.dept:hover .ic-wave,
+.dept.is-live .ic-wave            { animation: ic-wave 1.2s ease-out infinite; }
+.dept:hover .ic-wave + .ic-wave,
+.dept.is-live .ic-wave + .ic-wave { animation-delay: .2s; }
+.dept:hover .ic-gear-big,
+.dept.is-live .ic-gear-big        { animation: ic-turn 3s linear infinite; }
+.dept:hover .ic-gear-small,
+.dept.is-live .ic-gear-small      { animation: ic-turn 2.25s linear infinite reverse; }
+.dept:hover .ic-seal,
+.dept.is-live .ic-seal            { animation: ic-stamp .45s cubic-bezier(.25, 1.4, .45, 1); }
+.dept:hover .ic-person,
+.dept.is-live .ic-person          { animation: ic-bob 1.2s ease-in-out infinite; }
+.dept:hover .ic-person--back,
+.dept.is-live .ic-person--back    { animation-delay: .3s; }
+.dept:hover .ic-box,
+.dept.is-live .ic-box             { animation: ic-hop .9s ease-in-out infinite; }
+.dept:hover .ic-box + .ic-box,
+.dept.is-live .ic-box + .ic-box   { animation-delay: .12s; }
+.dept:hover .ic-box + .ic-box + .ic-box,
+.dept.is-live .ic-box + .ic-box + .ic-box { animation-delay: .24s; }
 
 @keyframes ic-flip  { from { transform: perspective(70px) rotateY(0); } to { transform: perspective(70px) rotateY(360deg); } }
 @keyframes ic-wave  { 0% { opacity: 0; transform: translateX(-2.5px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateX(2px); } }
@@ -451,7 +731,7 @@ svg {
    --------------------------------------------------------------------- */
 
 .foot {
-  padding: 22px 16px 26px;
+  padding: 18px 16px 24px;
   text-align: center;
   font-size: 12.5px;
   color: var(--muted);
@@ -461,13 +741,19 @@ svg {
    Smaller screens
    --------------------------------------------------------------------- */
 
-@media (max-width: 960px) {
+@media (max-width: 1000px) {
   .depts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 720px) {
+  .departments__hint {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
   .topbar {
     height: 62px;
   }
@@ -481,10 +767,6 @@ svg {
     font-size: 15px;
   }
 
-  .user__name {
-    display: none;
-  }
-
   .signout {
     width: 38px;
     padding: 0;
@@ -494,6 +776,32 @@ svg {
     display: none;
   }
 
+  /* the greeting on one line, the time on the next */
+  .hello {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    width: 100%;
+    padding: 10px 14px 10px 10px;
+    border-radius: 18px;
+    column-gap: 12px;
+    row-gap: 10px;
+  }
+
+  .hello__sep {
+    grid-column: 1 / -1;
+    width: 100%;
+    height: 1px;
+  }
+
+  .dial {
+    width: 36px;
+    height: 36px;
+  }
+
+  .clock {
+    grid-column: 2 / -1;
+  }
+
   /* the name takes three lines here (dashboard.js), so it's written large enough to read */
   .ink {
     aspect-ratio: 2.2;
@@ -501,40 +809,15 @@ svg {
 
   .depts {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: 14px;
   }
 
-  /* each department on one row: the icon beside its name */
-  .dept {
-    grid-template-columns: auto minmax(0, 1fr);
-    column-gap: 16px;
-    align-items: center;
-    padding: 16px 18px;
-    border-radius: 16px;
+  .dept__stage {
+    height: 150px;
   }
 
-  .dept__icon {
-    grid-row: span 2;
-    width: 48px;
-    height: 48px;
-    margin-bottom: 0;
-    border-radius: 13px;
-  }
-
-  .dept__icon svg {
-    width: 26px;
-    height: 26px;
-  }
-
-  .dept__name {
-    align-self: end;
-    font-size: 16px;
-  }
-
-  .dept__desc {
-    align-self: start;
-    margin-top: 2px;
-    font-size: 13.5px;
+  .dept__body {
+    padding: 14px 16px 16px;
   }
 }
 
@@ -547,7 +830,8 @@ svg {
     transition-duration: .01ms !important;
   }
 
-  .is-ready .dept {
+  .is-ready .dept,
+  .is-ready .hello {
     animation: none;
   }
 }
